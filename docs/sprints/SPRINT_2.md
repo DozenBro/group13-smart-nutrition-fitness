@@ -1,146 +1,147 @@
-# Sprint 2 Kế hoạch tập và streak
+# Sprint 2 Workout Planning and Streaks
 
-**Bản nháp 0.1 · 19/11/2026 · Trạng thái chưa triển khai**
+**Draft 0.2 · 19 November 2026 · Implementation pending**
 
-Đọc [spec tổng](../PROJECT_SPEC.md) và các phần auth/quyền sở hữu của [Sprint 1](SPRINT_1.md). Nội dung dưới đây chi tiết hóa WBS 2.1–2.8 để nhóm refinement. Chủ việc, reviewer và thuật toán là đề xuất cần nhóm xác nhận.
+Read the [main specification](../PROJECT_SPEC.md) and the authentication/ownership sections of [Sprint 1](SPRINT_1.md). This draft expands WBS 2.1–2.8 for refinement. Owners, reviewers, and algorithms require team confirmation.
 
-## Mục tiêu và phụ thuộc
+## Goal and Dependencies
 
-**Luồng demo** — Member chọn mục tiêu → nhận lịch tập đã lưu → xem chi tiết buổi tập → ghi nhận hoàn thành → xem streak đúng quy tắc.
+**Demo flow** — Member selects a goal → receives a saved schedule → views session details → records completion → sees the correct streak.
 
-Luồng tích hợp dùng tài khoản và quyền sở hữu từ Sprint 1. Trong lúc auth đang hoàn thiện, có thể chuẩn bị dữ liệu bài tập, prototype, template và unit test thuật toán riêng.
+The integrated flow uses Sprint 1 accounts and ownership. Exercise data, prototypes, templates, and independent algorithm tests can be prepared while authentication is being completed.
 
-| Thông tin | Giá trị |
+| Item | Value |
 | --- | --- |
-| Ngày bắt đầu / review | Chưa điền |
-| Người tổng hợp | Chưa điền |
-| Commit demo / kết quả review | Chưa có |
-| Đầu vào từ Sprint 1 | Auth, quyền sở hữu, migrations và CI |
+| Start / review date | To be filled |
+| Coordinator | To be filled |
+| Demo commit / review result | Unavailable |
+| Inputs from Sprint 1 | Authentication, ownership, migrations, and CI |
 
-## User story và điều kiện nghiệm thu
+## User Stories and Acceptance Criteria
 
-### US-AD02 Quản lý danh mục bài tập
+### US-AD02 Manage the Exercise Catalog
 
-**Là Admin, tôi muốn quản lý bài tập và loại bài để hệ thống có dữ liệu lập kế hoạch.** Phụ trách D, phối hợp C, review B. Trạng thái Chưa làm. WBS 2.3.
+**As an Admin, I want to manage exercises and categories so that the system has data for workout planning.** Owner D, collaborating with C, reviewer B. Status Not started. WBS 2.3.
 
-- **AC1** Admin tạo, xem, sửa và xóa hoặc lưu trữ bài tập/loại bài theo chính sách đã chốt.
-- **AC2** Tên, loại, dụng cụ, độ khó, hướng dẫn, đơn vị thực hiện và nguồn được kiểm tra theo mẫu dữ liệu.
-- **AC3** Member gọi API quản trị bị từ chối. Sửa bài tập không làm mất nội dung của kế hoạch và log đã có.
-- **AC4** Nhập được bộ seed đã review. Mốc tạm dùng là 40 bài, cần xác nhận S2-D04.
+- **AC1** Admins create, read, update, and delete/archive exercises and categories according to the agreed policy.
+- **AC2** Names, categories, equipment, difficulty, instructions, activity units, and sources are validated against the data template.
+- **AC3** Members calling administration APIs are rejected. Exercise edits retain the content of existing plans and logs.
+- **AC4** A reviewed seed dataset is imported. The provisional target is 40 exercises, pending S2-D04.
 
-### US-W01 Nhận và xem kế hoạch theo mục tiêu
+### US-W01 Obtain and View a Goal-Based Plan
 
-**Là Member, tôi muốn có lịch tập phù hợp với mục tiêu để biết mình cần tập gì theo ngày.** Phụ trách D, phối hợp C, review A. Trạng thái Chưa làm. WBS 2.4–2.5.
+**As a Member, I want a schedule matching my goal so that I know what to do each day.** Owner D, collaborating with C, reviewer A. Status Not started. WBS 2.4–2.5.
 
-- **AC1** Ba mục tiêu giảm cân, tăng cơ và duy trì đều tạo được kế hoạch hợp lệ khi có đủ dữ liệu.
-- **AC2** Kế hoạch ghi rõ ngày/buổi, bài tập, số hiệp và số lần hoặc thời lượng theo template đã chốt.
-- **AC3** Mục tiêu thiếu hoặc sai bị từ chối. Thiếu bài tập phù hợp trả thông báo rõ ràng.
-- **AC4** Kế hoạch được lưu, đọc lại sau refresh, chỉ chủ sở hữu truy cập được.
-- **AC5** Có thể giải thích bài tập được chọn theo rule/template nào. Cách thay đổi kế hoạch hiện tại tuân theo S2-D01.
+- **AC1** Weight loss, muscle gain, and maintenance each produce a valid plan when enough data is available.
+- **AC2** The plan specifies days/sessions, exercises, sets, and repetitions or duration according to the agreed template.
+- **AC3** Missing or invalid goals are rejected. Insufficient matching exercises produce a clear message.
+- **AC4** Plans are saved, readable after refresh, and accessible only by their owner.
+- **AC5** Exercise selection can be explained using its rule/template. Changes to an existing plan follow S2-D01.
 
-### US-W04 Ghi nhận hoàn thành buổi tập
+### US-W04 Record Workout Completion
 
-**Là Member, tôi muốn đánh dấu buổi tập đã hoàn thành để lưu lại hoạt động của mình.** Phụ trách D, phối hợp C, review B. Trạng thái Chưa làm. WBS 2.6.
+**As a Member, I want to mark a workout session complete so that my activity is recorded.** Owner D, collaborating with C, reviewer B. Status Not started. WBS 2.6.
 
-- **AC1** Chỉ chủ sở hữu ghi nhận được buổi tập đúng ngày được phép.
-- **AC2** Refresh vẫn thấy trạng thái hoàn thành đã lưu.
-- **AC3** Bấm hai lần, gửi lại request hoặc hai request đồng thời đều chỉ tạo một lần hoàn thành cho cùng buổi.
-- **AC4** Lỗi lưu không tạo trạng thái thành công giả trên UI. Log và dữ liệu activity nhất quán khi thao tác thất bại.
-- **AC5** Ngày hoạt động được xác định theo rule đã chốt để Sprint 3 tái sử dụng.
+- **AC1** Only the owner can complete a session on an allowed date.
+- **AC2** The saved completion state persists after refresh.
+- **AC3** Double clicks, retries, and two concurrent requests create only one completion for the same session.
+- **AC4** Save failures do not display false success. Logs and activity data remain consistent when an operation fails.
+- **AC5** Activity dates follow the agreed rule so Sprint 3 can reuse it.
 
-### US-S01 Xem streak hoạt động
+### US-S01 View the Activity Streak
 
-**Là Member, tôi muốn xem chuỗi ngày hoạt động liên tiếp để theo dõi thói quen.** Phụ trách D, review F. Trạng thái Chưa làm. WBS 2.6, mở rộng ở 3.4.
+**As a Member, I want to view consecutive active days so that I can track my habits.** Owner D, reviewer F. Status Not started. WBS 2.6, extended in 3.4.
 
-- **AC1** Hoàn thành nhiều buổi trong cùng ngày chỉ đóng góp một ngày hoạt động.
-- **AC2** Các ngày liên tiếp nối dài streak, bỏ lỡ một ngày đầy đủ thì chuỗi mới bắt đầu từ lần hoạt động tiếp theo.
-- **AC3** Trước khi có hoạt động hôm nay, hiển thị đúng trạng thái theo S2-D03, tránh coi hôm nay là ngày đã bỏ lỡ.
-- **AC4** Có test ngày đầu, trùng ngày, ngày liên tiếp, bỏ ngày, qua nửa đêm và request đồng thời.
-- **AC5** Streak có thể đối chiếu lại với log, chỉ chủ tài khoản xem được dữ liệu cá nhân.
+- **AC1** Completing multiple sessions on one date contributes one active day.
+- **AC2** Consecutive active dates extend the streak. After a full missed date, the next activity starts a new streak.
+- **AC3** Before today's first activity, display the state defined by S2-D03 without treating today as already missed.
+- **AC4** Tests cover the first day, duplicate dates, consecutive dates, missed dates, midnight, and concurrent requests.
+- **AC5** The streak can be reconciled with logs. Private data is accessible only to its account owner.
 
-## Quy tắc và quyết định
+## Rules and Decisions
 
-| Mã | Nội dung đề xuất | Trạng thái / người theo dõi |
+| ID | Proposal | Status / owner |
 | --- | --- | --- |
-| S2-D01 | Dùng template được review cho ba mục tiêu. Chốt lịch, cách chọn bài, đơn vị, nghỉ giữa buổi, cách tạo lại/thay kế hoạch | Chờ D + A chốt |
-| S2-D02 | Chốt dữ liệu danh mục, cách xóa/lưu trữ và giữ nội dung lịch sử khi danh mục thay đổi | Chờ D + B chốt |
-| S2-D03 | Chốt múi giờ cùng D-05, ngày được phép hoàn thành và cách undo/backdate. Đề xuất dùng ngày server, mỗi ngày tính một lần | Chờ D + A chốt |
-| S2-D04 | Xác nhận ký hiệu bị lỗi trong CSV trước số 40. Dùng 40 bài làm mục tiêu seed tạm thời | Chờ A xác nhận |
+| S2-D01 | Use reviewed templates for three goals. Define schedules, selection, units, rest between sessions, and plan regeneration/replacement | Awaiting D + A |
+| S2-D02 | Define catalog fields, deletion/archiving, and history preservation after catalog edits | Awaiting D + B |
+| S2-D03 | Confirm timezone with D-05, allowed completion dates, and undo/backdating. Proposed basis is server dates, counted once per day | Awaiting D + A |
+| S2-D04 | Confirm the damaged CSV symbol before 40. Use 40 exercises as the provisional seed target | Awaiting A |
 
-**Cách tính streak đề xuất** — Lấy các ngày có hoạt động hợp lệ, loại trùng. Nếu hôm nay có hoạt động, đếm chuỗi kết thúc hôm nay. Nếu chưa có hôm nay nhưng có hôm qua, giữ chuỗi kết thúc hôm qua. Các trường hợp còn lại trả 0. Hoạt động mới sau một ngày bỏ lỡ bắt đầu chuỗi 1.
+**Proposed streak calculation** — Obtain distinct dates with valid activity. If today is active, count the sequence ending today. Otherwise, if yesterday is active, retain the sequence ending yesterday. Other cases return 0. A new activity after a missed date starts a streak of 1.
 
-Nhóm chốt S2-D03 trước khi dùng cách tính này làm điều kiện test. Test dùng đồng hồ cố định. Khi bổ sung bữa ăn, Sprint 3 tham chiếu lại rule này.
+Confirm S2-D03 before using this calculation as a test oracle. Tests use a fixed clock. Sprint 3 references this rule when adding meals.
 
-## Thiết kế và contract dự kiến
+## Design and Planned Contracts
 
-| Thành phần | Thiết kế cần giao |
+| Component | Design deliverable |
 | --- | --- |
-| UI | Figma chọn mục tiêu, lịch tuần, chi tiết buổi, trạng thái hoàn thành và lỗi |
-| Database | exercises/categories, workout_plans, workout_sessions, plan_items, workout_logs và cách lưu/đọc activity |
-| Integrity | Khóa ngoại, chủ sở hữu, quy tắc lịch sử, duy nhất một completion cho user/buổi |
-| API | Contract quản trị bài tập, tạo/đọc kế hoạch, hoàn thành buổi và lấy streak |
-| Sequence diagram | Trình tự hoàn thành buổi, kiểm tra quyền, ghi log và tính/cập nhật activity |
+| UI | Figma goal selection, weekly schedule, session details, completion, and errors |
+| Database | exercises/categories, workout_plans, workout_sessions, plan_items, workout_logs, and activity storage/retrieval |
+| Integrity | Foreign keys, ownership, history rules, and unique completion per user/session |
+| API | Exercise administration, plan creation/retrieval, session completion, and streak contracts |
+| Sequence diagram | Completion flow, authorization, log storage, and activity calculation/update |
 
-Các nhóm API trên là phạm vi thiết kế. Người thực hiện ghi method/path, request/response, lỗi và ví dụ vào issue thiết kế trước khi frontend/backend tích hợp. API dùng auth của Sprint 1. Migration phải giữ được dữ liệu tài khoản và số đo đã có.
+These API groups define planned design work. Record methods/paths, requests/responses, errors, and examples in the design issue before frontend/backend integration. Reuse Sprint 1 authentication. Migrations must preserve existing account and measurement data.
 
-### Mẫu dữ liệu bài tập
+### Exercise Data Template
 
-`id`, `name`, `category`, `equipment`, `difficulty`, `instructions`, `goal_tags`, `source`, `review_status`. Liều lượng tập như sets/reps/duration thuộc template hoặc plan item khi phù hợp. Mỗi batch có người nhập và người review khác nhau.
+`id`, `name`, `category`, `equipment`, `difficulty`, `instructions`, `goal_tags`, `source`, `review_status`. Prescriptions such as sets/reps/duration belong in templates or plan items where appropriate. Each batch has separate data-entry and review owners.
 
-## Task và phân công
+## Tasks and Assignments
 
-| Task | Kết quả cần giao | Chủ việc / review đề xuất | Phụ thuộc | Hạn | Trạng thái | Issue/PR |
+| Task | Deliverable | Proposed owner / reviewer | Dependencies | Due | Status | Issue/PR |
 | --- | --- | --- | --- | --- | --- | --- |
-| S2-01 | Prototype và refinement story, rule workout/streak | C + D / A | Phản hồi Sprint 1 | Chưa điền | Chưa làm | Chưa tạo |
-| S2-02 | ERD v2, migration, contract và sequence diagram | D + B / F | S2-D01–S2-D03 | Chưa điền | Chưa làm | Chưa tạo |
-| S2-03 | Admin danh mục và bộ seed được review | D + C / E | S2-02, S2-D04 | Chưa điền | Chưa làm | Chưa tạo |
-| S2-04 | Sinh kế hoạch và test ba mục tiêu/thiếu dữ liệu | D / A | S2-02, dữ liệu thử | Chưa điền | Chưa làm | Chưa tạo |
-| S2-05 | Lịch tuần và chi tiết kế hoạch từ API | C / D | Contract S2-02, S2-04 | Chưa điền | Chưa làm | Chưa tạo |
-| S2-06 | Completion và streak, test trùng/ngày/quyền | D / B + F | S2-04, S2-D03 | Chưa điền | Chưa làm | Chưa tạo |
-| S2-07 | Test tích hợp, regression Sprint 1, migration bảo toàn dữ liệu | F + A / B | Luồng tích hợp | Chưa điền | Chưa làm | Chưa tạo |
-| S2-08 | Review, phản hồi, quyết định challenge và kế hoạch Sprint 3 | A + F / cả nhóm | S2-07, D-04 | Chưa điền | Chưa làm | Chưa tạo |
+| S2-01 | Prototype and story/workout/streak rule refinement | C + D / A | Sprint 1 feedback | To be filled | Not started | Not created |
+| S2-02 | ERD v2, migrations, contracts, and sequence diagram | D + B / F | S2-D01–S2-D03 | To be filled | Not started | Not created |
+| S2-03 | Admin catalog and reviewed seed dataset | D + C / E | S2-02, S2-D04 | To be filled | Not started | Not created |
+| S2-04 | Plan generation and tests for three goals/insufficient data | D / A | S2-02, trial data | To be filled | Not started | Not created |
+| S2-05 | Weekly schedule and plan details from the API | C / D | S2-02 contracts, S2-04 | To be filled | Not started | Not created |
+| S2-06 | Completion/streak logic and duplicate/date/permission tests | D / B + F | S2-04, S2-D03 | To be filled | Not started | Not created |
+| S2-07 | Integration, Sprint 1 regression, and data-preserving migration tests | F + A / B | Integrated flow | To be filled | Not started | Not created |
+| S2-08 | Review, feedback, challenge decision, and Sprint 3 planning | A + F / whole team | S2-07, D-04 | To be filled | Not started | Not created |
 
-## Kiểm thử và review
+## Testing and Review
 
-| Story | Kiểm tra cần có | Bằng chứng hiện tại |
+| Story | Required checks | Current evidence |
 | --- | --- | --- |
-| US-AD02 | Admin CRUD, Member bị từ chối, seed nhập lại, lịch sử khi sửa/xóa | Chưa có |
-| US-W01 | Ba mục tiêu, goal sai/rỗng, thiếu bài, refresh, đọc kế hoạch của người khác | Chưa có |
-| US-W04 | Thành công, trùng request, đồng thời, ngày sai, thất bại transaction | Chưa có |
-| US-S01 | Trùng ngày, liên tiếp, bỏ ngày, nửa đêm, hôm nay chưa hoạt động | Chưa có |
-| Regression | Auth/health còn đạt, migration giữ dữ liệu cũ | Chưa có |
+| US-AD02 | Admin CRUD, Member denial, repeat seed import, history after edits/deletion | None yet |
+| US-W01 | Three goals, invalid/empty goal, insufficient exercises, refresh, another user's plan | None yet |
+| US-W04 | Success, retries, concurrency, invalid dates, transaction failure | None yet |
+| US-S01 | Duplicate/consecutive/missed dates, midnight, no activity yet today | None yet |
+| Regression | Authentication/health still pass, migration preserves old data | None yet |
 
-- [ ] Áp dụng [điều kiện Done chung](../PROJECT_SPEC.md#điều-kiện-hoàn-thành) cho từng task/story.
-- [ ] Demo goal → kế hoạch → completion → streak, rồi thử trùng request và input sai.
-- [ ] Mở rule, sequence diagram, test và CI của commit demo để giải thích.
-- [ ] Ghi quyết định D-04 trước khi đưa challenge vào Sprint 3.
-- [ ] Ghi phản hồi thật và một cải thiện cho sprint sau.
+- [ ] Apply the [shared Definition of Done](../PROJECT_SPEC.md#definition-of-done) to each task/story.
+- [ ] Demonstrate goal → plan → completion → streak, then retries and invalid input.
+- [ ] Explain the rules, sequence diagram, tests, and CI for the demonstrated commit.
+- [ ] Record D-04 before including challenges in Sprint 3.
+- [ ] Record actual feedback and one improvement for the next sprint.
 
-## Nhật ký và bàn giao AI
+## Work Log and AI Handover
 
-Dùng [prompt chung](../PROJECT_SPEC.md#prompt-dùng-chung). Hiện chưa có phiên thực hiện Sprint 2 được xác nhận.
+Use the [shared prompt](../PROJECT_SPEC.md#shared-ai-prompt). No Sprint 2 work session has been confirmed yet.
 
-| Nhật ký | Ngày / thành viên | Task | Kết quả | Commit/PR/test | Reviewer và kết luận |
+| Log | Date / member | Task | Result | Commit/PR/test | Reviewer and conclusion |
 | --- | --- | --- | --- | --- | --- |
-| Chưa có | Chưa điền | Chưa điền | Chưa điền | Chưa điền | Chưa điền |
+| None yet | To be filled | To be filled | To be filled | To be filled | To be filled |
 
 ```text
-Nhật ký: S2-LOG-[số]
-Ngày giờ và múi giờ: [thực tế]
-Thành viên / task / story / issue: [tên và mã]
-Commit bắt đầu: [commit]
-Mục tiêu và AC: [một kết quả và điều kiện kiểm tra]
-AI đã hỗ trợ: [công cụ/model, yêu cầu, đề xuất hoặc code]
-Thành viên đã kiểm tra/chỉnh lại: [cụ thể]
-File thay đổi: [đường dẫn tương đối]
-Lệnh/kiểm tra đã chạy và kết quả: [thực tế hoặc chưa chạy]
-Bằng chứng / PR: [link hoặc chưa có]
-Reviewer và kết luận: [tên/kết luận hoặc chờ review]
-Blocker / bước tiếp theo: [nội dung]
+Log: S2-LOG-[number]
+Date, time, and timezone: [actual time]
+Member / task / story / issue: [name and IDs]
+Starting commit: [commit]
+Goal and acceptance criteria: [one outcome and its checks]
+AI assistance: [tool/model, request, proposal, or code]
+What the member verified or changed: [specific details]
+Changed files: [relative paths]
+Commands/checks executed and results: [actual results, or not run]
+Evidence / PR: [link, or unavailable]
+Reviewer and conclusion: [name/conclusion, or awaiting review]
+Blockers / next steps: [details]
 ```
 
-## Lịch sử tài liệu
+## Revision History
 
-| Phiên bản | Ngày | Thay đổi | Xác nhận |
+| Version | Date | Change | Confirmation |
 | --- | --- | --- | --- |
-| 0.1 | 19/11/2026 | Chi tiết hóa WBS 2.1–2.8, giữ mã story từ hướng dẫn dự án | Bản nháp soạn với AI, chờ nhóm chốt |
+| 0.1 | 19 November 2026 | Expand WBS 2.1–2.8, retaining story IDs from the execution guide | Draft prepared with AI, awaiting team confirmation |
+| 0.2 | 19 November 2026 | Translate into English and update navigation links | Awaiting team review |

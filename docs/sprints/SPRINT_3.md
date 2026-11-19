@@ -1,159 +1,160 @@
-# Sprint 3 Bữa ăn Việt Nam và phát hành
+# Sprint 3 Vietnamese Meals and Release
 
-**Bản nháp 0.1 · 19/11/2026 · Trạng thái chưa triển khai**
+**Draft 0.2 · 19 November 2026 · Implementation pending**
 
-Đọc [spec tổng](../PROJECT_SPEC.md), TDEE/quyền sở hữu ở [Sprint 1](SPRINT_1.md) và streak/completion ở [Sprint 2](SPRINT_2.md). Phạm vi dựa trên WBS 3.1–3.7. Checklist nghiệm thu cuối tham chiếu WBS 4.1–4.2.
+Read the [main specification](../PROJECT_SPEC.md), TDEE/ownership in [Sprint 1](SPRINT_1.md), and streak/completion in [Sprint 2](SPRINT_2.md). Scope follows WBS 3.1–3.7. Final acceptance references WBS 4.1–4.2.
 
-## Mục tiêu và phụ thuộc
+## Goal and Dependencies
 
-**Luồng demo** — Member có hồ sơ và target năng lượng → nhập sở thích/ngân sách → nhận kế hoạch bữa ăn → ghi nhận hoàn thành → activity/streak cập nhật. Toàn bộ health → workout → meal chạy được trên staging.
+**Demo flow** — Member has a profile and energy target → enters preferences/budget → receives a meal plan → records completion → activity/streak updates. The complete health → workout → meal flow works on staging.
 
-Dùng auth và dữ liệu hồ sơ từ Sprint 1, tái sử dụng rule ngày/streak từ Sprint 2. Có thể thu thập dữ liệu và thử thuật toán meal độc lập từ sớm. Trạng thái task, tên và lịch bên dưới đang chờ nhóm xác nhận.
+Reuse Sprint 1 authentication/profile data and Sprint 2 date/streak rules. Data collection and independent meal-algorithm experiments can start early. The team must confirm task status, assignments, and dates below.
 
-| Thông tin | Giá trị |
+| Item | Value |
 | --- | --- |
-| Ngày bắt đầu / review | Chưa điền |
-| Hạn đóng băng tính năng / nghiệm thu cuối | Chưa điền |
-| URL staging / commit phát hành | Chưa có |
-| Người tổng hợp / người nghiệm thu | Chưa điền |
+| Start / review date | To be filled |
+| Feature freeze / final acceptance deadline | To be filled |
+| Staging URL / release commit | Unavailable |
+| Coordinator / acceptance tester | To be filled |
 
-## User story và điều kiện nghiệm thu
+## User Stories and Acceptance Criteria
 
-### US-AD03 Quản lý món ăn Việt Nam
+### US-AD03 Manage Vietnamese Foods
 
-**Là Admin, tôi muốn quản lý món ăn và thông tin dinh dưỡng để có dữ liệu đáng tin cậy cho gợi ý bữa ăn.** Phụ trách E, phối hợp C, review A. Trạng thái Chưa làm. WBS 3.2.
+**As an Admin, I want to manage foods and nutrition data so that meal suggestions use reliable catalog information.** Owner E, collaborating with C, reviewer A. Status Not started. WBS 3.2.
 
-- **AC1** Admin tạo, đọc, sửa và xóa/lưu trữ món theo chính sách giữ lịch sử đã chốt.
-- **AC2** Mỗi món có khẩu phần, kcal, protein/carb/fat và giá VND cùng một cơ sở khẩu phần, có nguồn dinh dưỡng và bối cảnh giá.
-- **AC3** Dữ liệu thiếu đơn vị hoặc không hợp lệ bị từ chối. Member gọi API quản trị bị từ chối.
-- **AC4** Có bộ seed được review, mốc tạm 60 món cần xác nhận S3-D03. Nhập lại cùng seed không tạo bản ghi trùng.
-- **AC5** Sửa/xóa món không làm thay đổi thông tin của kế hoạch đã lưu trước đó.
+- **AC1** Admins create, read, update, and delete/archive foods according to the agreed history-preservation policy.
+- **AC2** Every food includes portion, kcal, protein/carbohydrate/fat, and price in VND on the same portion basis, with nutrition sources and price context.
+- **AC3** Missing units or invalid data are rejected. Members calling administration APIs are rejected.
+- **AC4** A reviewed seed dataset is available, provisionally 60 foods pending S3-D03. Reimporting it creates no duplicates.
+- **AC5** Food edits/deletion preserve the content of previously saved plans.
 
-### US-M01 Nhận và xem gợi ý bữa ăn
+### US-M01 Obtain and View Meal Suggestions
 
-**Là Member, tôi muốn nhận gợi ý món Việt theo target năng lượng, sở thích và ngân sách để có kế hoạch phù hợp với các lựa chọn của mình.** Phụ trách E, phối hợp C, review D. Trạng thái Chưa làm. WBS 3.3.
+**As a Member, I want Vietnamese meal suggestions based on energy targets, preferences, and budget so that plans reflect my choices.** Owner E, collaborating with C, reviewer D. Status Not started. WBS 3.3.
 
-- **AC1** Input hợp lệ và có đủ dữ liệu tạo được kế hoạch trong giới hạn kcal, sở thích và ngân sách đã chốt.
-- **AC2** Thiếu target/hồ sơ thì chỉ rõ thông tin cần bổ sung. Ngân sách hoặc sở thích sai bị từ chối.
-- **AC3** Không có tổ hợp thỏa tất cả điều kiện thì trả no-match với hướng dẫn điều chỉnh lựa chọn.
-- **AC4** Kế hoạch hiển thị món, lượng/khẩu phần, tổng kcal và giá. Dữ liệu đủ để giải thích vì sao tổ hợp được chọn.
-- **AC5** Kế hoạch được lưu và đọc lại sau refresh, chỉ người sở hữu xem được. Lưu đầu vào/rule và giá trị món cần thiết để giữ lịch sử.
+- **AC1** Valid inputs and sufficient data produce a plan meeting the agreed calorie, preference, and budget constraints.
+- **AC2** Missing target/profile data identifies what to complete. Invalid budgets or preferences are rejected.
+- **AC3** If no combination satisfies every constraint, return no-match with guidance on adjusting the request.
+- **AC4** Plans display foods, quantities/portions, total kcal, and price, with enough data to explain the selection.
+- **AC5** Plans persist after refresh and are accessible only by their owner. Store inputs/rules and necessary food values to preserve history.
 
-### US-M02 Ghi nhận bữa ăn và cập nhật hoạt động
+### US-M02 Record Meals and Update Activity
 
-**Là Member, tôi muốn đánh dấu bữa ăn đã hoàn thành để ghi nhận thói quen cùng với tập luyện.** Phụ trách E + D, phối hợp C, review B. Trạng thái Chưa làm. WBS 3.4.
+**As a Member, I want to mark meals complete so that I can record nutrition habits alongside workouts.** Owners E + D, collaborating with C, reviewer B. Status Not started. WBS 3.4.
 
-- **AC1** Thành viên chỉ hoàn thành bữa ăn thuộc kế hoạch của mình, theo ngày được phép.
-- **AC2** Gửi lại request hoặc request đồng thời chỉ ghi nhận một completion cho cùng bữa.
-- **AC3** Workout và meal cùng ngày chỉ đóng góp một ngày cho streak chung theo rule đã chốt.
-- **AC4** Refresh hiển thị đúng log và streak, lỗi lưu không tạo trạng thái hoàn thành giả.
-- **AC5** Nếu hỗ trợ undo, kết quả activity được tính lại từ các log còn hợp lệ theo S2-D03/S3-D02.
+- **AC1** Members complete only meals in their own plans, on permitted dates.
+- **AC2** Retries and concurrent requests create one completion for the same meal.
+- **AC3** Workouts and meals on one date contribute one day to the combined streak under the agreed rule.
+- **AC4** Refresh displays accurate logs and streaks. Save failures do not create false completion states.
+- **AC5** If undo is supported, activity is recalculated from remaining valid logs under S2-D03/S3-D02.
 
-### US-C01 Challenge cơ bản
+### US-C01 Basic Challenges
 
-**Là Admin, tôi muốn quản lý challenge; là Member, tôi muốn xem tiến độ của mình theo mục tiêu challenge.** Trạng thái Chờ D-04. WBS 3.5. Chủ việc/reviewer chờ nhóm phân công nếu được đưa vào sprint.
+**As an Admin, I want to manage challenges. As a Member, I want to view my progress against a challenge goal.** Status Awaiting D-04. WBS 3.5. Assign an owner/reviewer if included in the sprint.
 
-- **AC1** Admin quản lý tên, khoảng ngày và mục tiêu, Member chỉ truy cập chức năng được phép.
-- **AC2** Tiến độ tính từ log có thật, không tính lại hai lần cùng hoạt động/ngày theo rule challenge.
-- **AC3** Thành viên xem được tiến độ của mình và kết quả đạt/chưa đạt đúng theo rule.
+- **AC1** Admins manage names, date intervals, and goals. Members access only permitted features.
+- **AC2** Progress uses actual logs and does not count the same activity/date twice under the challenge rule.
+- **AC3** Members see their own progress and the correct achieved/not-achieved result.
 
-Ghi quyết định giữ hoặc hoãn story này cùng người chốt và lý do. Nếu bắt buộc theo giảng viên, cập nhật kế hoạch trước khi nghiệm thu.
+Record the inclusion/deferral decision, decision maker, and reason. If the instructor requires this story, update the plan before acceptance.
 
-## Quy tắc và quyết định
+## Rules and Decisions
 
-| Mã | Cần thống nhất | Người theo dõi / trạng thái |
+| ID | Decision needed | Owner / status |
 | --- | --- | --- |
-| S3-D01 | Target kcal lấy từ đâu, có điều chỉnh theo goal không, dung sai ±10% trong CSV có được chấp nhận không, biên có tính bằng không | A + E, chờ chốt |
-| S3-D02 | Các preference được hỗ trợ, ngân sách/ngày, bữa sáng/trưa/tối, lượng khẩu phần và món lặp, cách đổi lại kế hoạch/undo | E + D, chờ chốt |
-| S3-D03 | Xác nhận ký hiệu lỗi trước số 60, chuẩn nguồn/khẩu phần/giá, cách lưu trữ món | A + E, chờ chốt, tạm dùng 60 món |
-| S3-D04 | Chốt môi trường staging, ngày feature freeze, kịch bản UAT và người nghiệm thu | F + A, chờ chốt cùng D-06 |
+| S3-D01 | Source of calorie targets, goal adjustments, acceptance of the CSV's ±10% tolerance, and inclusive/exclusive boundaries | A + E, awaiting decision |
+| S3-D02 | Supported preferences, daily budget, breakfast/lunch/dinner slots, portions, repeated foods, plan replacement, and undo | E + D, awaiting decision |
+| S3-D03 | Confirm the damaged symbol before 60, source/portion/price standards, and archiving policy | A + E, awaiting decision, provisional target 60 foods |
+| S3-D04 | Staging environment, feature-freeze date, UAT scenarios, and acceptance tester | F + A, awaiting decision with D-06 |
 
-**Thuật toán đề xuất** — Lọc món hợp lệ theo preference và slot bữa. Duyệt tổ hợp với khẩu phần đã chốt. Giữ các tổ hợp đạt ngân sách và giới hạn kcal. Chọn tổ hợp gần target nhất, rồi giá thấp hơn, rồi ID ổn định để giải thích kết quả. Trả no-match khi không có tổ hợp đạt.
+**Proposed algorithm** — Filter valid foods by preferences and meal slots. Enumerate combinations using agreed portions. Retain combinations within budget and calorie constraints. Rank by smallest target deviation, then lower price, then stable IDs for explainability. Return no-match when no combination qualifies.
 
-Ví dụ fixture phần mềm, giả sử đã chốt target 2.000 kcal, dung sai 10% và ngân sách 100.000 VND. Khoảng chấp nhận là 1.800–2.200 kcal. Tổ hợp phù hợp preference, 1.950 kcal và 90.000 VND đạt. Tổ hợp 2.000 kcal nhưng 110.000 VND bị loại. Đây là ví dụ kiểm tra constraint của thuật toán.
+Software fixture example, assuming a confirmed target of 2,000 kcal, 10% tolerance, and a 100,000 VND budget. The accepted range is 1,800–2,200 kcal. A preference-compatible combination at 1,950 kcal and 90,000 VND qualifies. A 2,000 kcal combination costing 110,000 VND is rejected. This fixture verifies algorithm constraints.
 
-Streak tiếp tục theo S2-D03. Rule ăn/tập dùng chung phải được cập nhật cùng test ở cả hai module khi thay đổi.
+Continue streak behavior under S2-D03. Changes to shared workout/meal rules require corresponding updates and tests in both modules.
 
-## Thiết kế và dữ liệu
+## Design and Data
 
-| Thành phần | Kết quả thiết kế cần giao |
+| Component | Design deliverable |
 | --- | --- |
-| UI | Preference, ngân sách, gợi ý kế hoạch, chi tiết, no-match, completion và lỗi |
-| Database | foods, meal_plans, meal_plan_items, meal_logs và liên kết activity/user |
-| Lịch sử | Lưu giá trị khẩu phần/kcal/giá và rule/đầu vào cần thiết khi sinh kế hoạch |
-| API | Contract admin foods, tạo/đọc kế hoạch, meal completion và streak chung |
-| Integrity | Khóa ngoại, quyền sở hữu, không trùng completion, giao dịch log/activity nhất quán |
+| UI | Preferences, budget, suggested plan, details, no-match, completion, and errors |
+| Database | foods, meal_plans, meal_plan_items, meal_logs, and activity/user relationships |
+| History | Retain portion/kcal/price values, rules, and inputs needed when creating plans |
+| API | Admin foods, plan creation/retrieval, meal completion, and combined streak contracts |
+| Integrity | Foreign keys, ownership, unique completions, and consistent log/activity transactions |
 
-Người thực hiện ghi method/path, request/response, auth và mã lỗi trong issue thiết kế trước khi tích hợp. Đây là contract cần xây trong sprint, hiện code chưa có nhóm API này.
+Document methods/paths, requests/responses, authentication, and error codes in the design issue before integration. This API group is planned sprint work and awaits implementation.
 
-**Mẫu món ăn** gồm `id`, tên Việt, mô tả/khối lượng khẩu phần, kcal, protein/carb/fat theo cùng khẩu phần, giá VND/khẩu phần, meal slot, preference tag, nguồn dinh dưỡng, nguồn/bối cảnh/ngày giá và người review. Giá ước tính được ghi rõ. Dữ liệu thiếu được bổ sung hoặc thay món có nguồn phù hợp trước khi dùng trong seed.
+**Food template** — `id`, Vietnamese name, portion description/weight, kcal, protein/carbohydrate/fat on the same portion basis, VND per portion, meal slot, preference tags, nutrition source, price source/context/date, and reviewer. Label price estimates. Complete missing data or select an appropriately sourced replacement before seeding.
 
-## Task và phân công
+## Tasks and Assignments
 
-| Task | Kết quả cần giao | Chủ việc / review đề xuất | Phụ thuộc | Hạn | Trạng thái | Issue/PR |
+| Task | Deliverable | Proposed owner / reviewer | Dependencies | Due | Status | Issue/PR |
 | --- | --- | --- | --- | --- | --- | --- |
-| S3-01 | Prototype, rule meal và các fixture thành công/no-match | E + C / A | D-02, S3-D01/S3-D02 | Chưa điền | Chưa làm | Chưa tạo |
-| S3-02 | Schema/migration, contract, admin food và seed có nguồn | E + B / D | S3-D03 | Chưa điền | Chưa làm | Chưa tạo |
-| S3-03 | Thuật toán gợi ý và màn hình kế hoạch đã lưu | E + C / D | S3-01, dữ liệu S3-02 | Chưa điền | Chưa làm | Chưa tạo |
-| S3-04 | Meal completion và streak ăn/tập chung | E + D / B | S3-03, rule Sprint 2 | Chưa điền | Chưa làm | Chưa tạo |
-| S3-05 | Challenge nếu được xác nhận trong phạm vi | Chờ phân công | D-04 | Chưa điền | Chờ quyết định | Chưa tạo |
-| S3-06 | Regression, kiểm tra quyền và lỗi xuyên module | F + cả nhóm / B | Health/workout/meal tích hợp | Chưa điền | Chưa làm | Chưa tạo |
-| S3-07 | Staging, hướng dẫn người dùng, demo và freeze bản release candidate | F + A / C | D-06, S3-D04, S3-06 | Chưa điền | Chưa làm | Chưa tạo |
-| S3-08 | UAT cuối, sửa lỗi, tag và tài liệu bàn giao | Cả nhóm / người nghiệm thu chờ chốt | Bản release candidate | Chưa điền | Chưa làm | Chưa tạo |
+| S3-01 | Prototype, meal rules, and success/no-match fixtures | E + C / A | D-02, S3-D01/S3-D02 | To be filled | Not started | Not created |
+| S3-02 | Schema/migration, contracts, food administration, and sourced seed data | E + B / D | S3-D03 | To be filled | Not started | Not created |
+| S3-03 | Recommendation algorithm and saved-plan interface | E + C / D | S3-01, S3-02 data | To be filled | Not started | Not created |
+| S3-04 | Meal completion and combined workout/meal streak | E + D / B | S3-03, Sprint 2 rules | To be filled | Not started | Not created |
+| S3-05 | Challenges if confirmed in scope | To be assigned | D-04 | To be filled | Awaiting decision | Not created |
+| S3-06 | Regression, authorization, and cross-module error checks | F + whole team / B | Integrated health/workout/meal flows | To be filled | Not started | Not created |
+| S3-07 | Staging, user guide, demo, and release-candidate freeze | F + A / C | D-06, S3-D04, S3-06 | To be filled | Not started | Not created |
+| S3-08 | Final UAT, defects, tag, and handover documents | Whole team / acceptance tester to be confirmed | Release candidate | To be filled | Not started | Not created |
 
-S3-08 nối với mốc nghiệm thu cuối WBS 4.1–4.2. Nhóm điền lịch của mốc này theo ngày nộp thực tế.
+S3-08 covers final acceptance milestones WBS 4.1–4.2. Schedule these milestones using the actual submission date.
 
-## Kiểm thử, review và bàn giao
+## Testing, Review, and Handover
 
-| Nhóm kiểm tra | Các ca cần có | Bằng chứng hiện tại |
+| Test area | Required cases | Current evidence |
 | --- | --- | --- |
-| Dữ liệu | Đơn vị/khẩu phần, nguồn, thiếu trường, âm, import trùng và sửa giá trong lịch sử | Chưa có |
-| Meal search | Có lời giải, no-match, preference sai, thiếu target, budget bằng biên và kcal ở hai biên | Chưa có |
-| Completion | Thành công, request lặp/đồng thời, người khác, ngày sai và lỗi transaction | Chưa có |
-| Streak chung | Workout + meal cùng ngày, chỉ meal, chỉ workout, bỏ ngày và qua nửa đêm | Chưa có |
-| Regression | Auth/health/workout còn hoạt động, migration giữ dữ liệu, Member/Admin đúng quyền | Chưa có |
-| Release | Fresh setup, staging, restart giữ dữ liệu, backup/restore và UAT theo AC | Chưa có |
+| Data | Units/portions, sources, missing fields, negatives, duplicate import, historical price edits | None yet |
+| Meal search | Feasible/no-match, invalid preference, missing target, exact budget, and both calorie boundaries | None yet |
+| Completion | Success, retries/concurrency, other user, invalid dates, and transaction failures | None yet |
+| Combined streak | Workout + meal on one date, meal only, workout only, missed dates, and midnight | None yet |
+| Regression | Authentication/health/workout behavior, preserved migration data, and Member/Admin authorization | None yet |
+| Release | Fresh setup, staging, persistence after restart, backup/restore, and UAT against criteria | None yet |
 
-- [ ] Đạt [điều kiện Done chung](../PROJECT_SPEC.md#điều-kiện-hoàn-thành) cho phạm vi đã chốt.
-- [ ] Demo health → workout → meal trên staging và một trường hợp no-match.
-- [ ] Review lỗi, không còn lỗi critical/high đang mở theo tiêu chí kế hoạch.
-- [ ] Ghi quyết định challenge, URL staging, commit và kết quả CI/test.
-- [ ] Chốt release candidate và ghi các thay đổi tiếp theo vào bug/issue.
+- [ ] Meet the [shared Definition of Done](../PROJECT_SPEC.md#definition-of-done) for the agreed scope.
+- [ ] Demonstrate health → workout → meal on staging and a no-match case.
+- [ ] Review defects, leaving no critical/high defects open under the plan's acceptance criteria.
+- [ ] Record the challenge decision, staging URL, commit, and CI/test results.
+- [ ] Freeze the release candidate and track subsequent changes through defects/issues.
 
-### Nghiệm thu cuối và tài liệu nộp
+### Final Acceptance and Submission
 
-- [ ] Người nghiệm thu thực hiện kịch bản đã thống nhất và ghi kết quả thực tế.
-- [ ] Có README chạy được từ máy khác, hướng dẫn sử dụng, ERD, sơ đồ kiến trúc và danh sách API khớp code.
-- [ ] Có bảng story → task → commit/PR → test → kết quả nghiệm thu.
-- [ ] Có báo cáo sprint, phản hồi và hành động retrospective thực tế.
-- [ ] Có tag/commit cuối, cách backup/khôi phục và danh sách giới hạn/lỗi đã công bố.
-- [ ] Sáu thành viên giải thích được đóng góp của mình, phần AI hỗ trợ và kiểm tra đã làm.
+- [ ] The acceptance tester executes agreed scenarios and records actual results.
+- [ ] Provide a README usable on another machine, user guide, ERD, architecture diagram, and API list matching the code.
+- [ ] Provide story → task → commit/PR → test → acceptance-result traceability.
+- [ ] Provide sprint reports, feedback, and actual retrospective actions.
+- [ ] Record the final tag/commit, backup/restore steps, and disclosed limitations/defects.
+- [ ] All six members explain their contributions, AI assistance, and verification performed.
 
-## Nhật ký và bàn giao AI
+## Work Log and AI Handover
 
-Dùng [prompt chung](../PROJECT_SPEC.md#prompt-dùng-chung). Hiện chưa có phiên thực hiện Sprint 3 được xác nhận.
+Use the [shared prompt](../PROJECT_SPEC.md#shared-ai-prompt). No Sprint 3 work session has been confirmed yet.
 
-| Nhật ký | Ngày / thành viên | Task | Kết quả | Commit/PR/test | Reviewer và kết luận |
+| Log | Date / member | Task | Result | Commit/PR/test | Reviewer and conclusion |
 | --- | --- | --- | --- | --- | --- |
-| Chưa có | Chưa điền | Chưa điền | Chưa điền | Chưa điền | Chưa điền |
+| None yet | To be filled | To be filled | To be filled | To be filled | To be filled |
 
 ```text
-Nhật ký: S3-LOG-[số]
-Ngày giờ và múi giờ: [thực tế]
-Thành viên / task / story / issue: [tên và mã]
-Commit bắt đầu: [commit]
-Mục tiêu và AC: [một kết quả và điều kiện kiểm tra]
-AI đã hỗ trợ: [công cụ/model, yêu cầu, đề xuất hoặc code]
-Thành viên đã kiểm tra/chỉnh lại: [cụ thể]
-File thay đổi: [đường dẫn tương đối]
-Lệnh/kiểm tra đã chạy và kết quả: [thực tế hoặc chưa chạy]
-Bằng chứng / PR: [link hoặc chưa có]
-Reviewer và kết luận: [tên/kết luận hoặc chờ review]
-Blocker / bước tiếp theo: [nội dung]
+Log: S3-LOG-[number]
+Date, time, and timezone: [actual time]
+Member / task / story / issue: [name and IDs]
+Starting commit: [commit]
+Goal and acceptance criteria: [one outcome and its checks]
+AI assistance: [tool/model, request, proposal, or code]
+What the member verified or changed: [specific details]
+Changed files: [relative paths]
+Commands/checks executed and results: [actual results, or not run]
+Evidence / PR: [link, or unavailable]
+Reviewer and conclusion: [name/conclusion, or awaiting review]
+Blockers / next steps: [details]
 ```
 
-## Lịch sử tài liệu
+## Revision History
 
-| Phiên bản | Ngày | Thay đổi | Xác nhận |
+| Version | Date | Change | Confirmation |
 | --- | --- | --- | --- |
-| 0.1 | 19/11/2026 | Chi tiết hóa WBS 3.1–3.7 và nghiệm thu WBS 4.1–4.2 | Bản nháp soạn với AI, chờ nhóm chốt |
+| 0.1 | 19 November 2026 | Expand WBS 3.1–3.7 and final acceptance WBS 4.1–4.2 | Draft prepared with AI, awaiting team confirmation |
+| 0.2 | 19 November 2026 | Translate into English and update navigation links | Awaiting team review |

@@ -1,133 +1,130 @@
-# Sprint 1 Nền tảng và theo dõi sức khỏe
+# Sprint 1 Foundation and Health Tracking
 
-**Bản nháp 0.2 · 19/11/2026 · Trạng thái đang thực hiện một phần**
+**Draft 0.3 · 19 November 2026 · Partially implemented**
 
-Đọc [spec tổng](../PROJECT_SPEC.md) trước khi nhận việc. Mốc code đối chiếu là `7e0f064`. Ngày bắt đầu, ngày review và tên thành viên cần nhóm xác nhận. Phạm vi dựa trên WBS 1.1–1.9 của kế hoạch nhóm.
+Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code baseline is `7e0f064`. The team must confirm start/review dates and member names. Scope follows WBS 1.1–1.9 in the group plan.
 
-## Mục tiêu và mốc hiện tại
+## Goal and Current Baseline
 
-**Luồng cần nghiệm thu** — Member đăng ký, đăng nhập, cập nhật hồ sơ, lưu số đo của mình và xem BMI/TDEE, lịch sử và biểu đồ. Admin xem danh sách, khóa/mở khóa tài khoản.
+**Acceptance flow** — A Member registers, logs in, updates their profile, saves their own measurements, and views BMI/TDEE, history, and charts. An Admin lists, locks, and unlocks accounts.
 
-**Đã có** — Demo số đo/BMI dùng dữ liệu chung, PostgreSQL và migration, API có kiểm tra đầu vào, 12 trường hợp test và CI thành công. **Cần hoàn thiện** — Tài khoản, quyền sở hữu, hồ sơ/TDEE, biểu đồ, admin và nghiệm thu của nhóm.
+**Available** — Shared measurement/BMI demo, PostgreSQL and migrations, input validation, 12 test cases, and successful CI. **Pending** — Accounts, ownership, profiles/TDEE, charts, administration, and team acceptance.
 
-**Ưu tiên triển khai** — Chốt D-03 → thiết kế và migration auth → register/login/logout → bảo vệ số đo theo user → hồ sơ/TDEE → biểu đồ và admin → test tích hợp và review. Có thể thực hiện thiết kế UI và tìm nguồn công thức song song.
+**Implementation order** — Finalize D-03, design authentication and its migrations, implement register/login/logout, protect measurement ownership, add profiles/TDEE, add charts and administration, then perform integration testing and review. Interface design and formula research can proceed in parallel.
 
-| Mốc nhóm cần điền | Giá trị |
+| Team milestone | Value |
 | --- | --- |
-| Ngày bắt đầu | Chưa điền |
-| Ngày review | Chưa điền |
-| Commit dùng để demo | Chưa điền khi nghiệm thu |
-| Người tổng hợp | Chưa điền |
+| Start date | To be filled |
+| Review date | To be filled |
+| Demo commit | To be recorded at acceptance |
+| Coordinator | To be filled |
 
-## User story và điều kiện nghiệm thu
+## User Stories and Acceptance Criteria
 
-**AC** là điều kiện nghiệm thu có thể kiểm tra. Một story chỉ được chuyển sang Done sau khi đáp ứng toàn bộ AC và điều kiện Done chung. Mỗi story giữ mã ổn định để liên kết code, test và nhật ký.
+**AC** are verifiable acceptance criteria. A story reaches Done after meeting all its criteria and the shared Definition of Done. Stable IDs connect stories to code, tests, and logs.
 
-### US-A01 Đăng ký tài khoản
+### US-A01 Register an Account
 
-**Là người mới, tôi muốn tạo tài khoản để có thể sử dụng các chức năng dành cho thành viên.** Phụ trách đề xuất B, phối hợp C, review D. Trạng thái Chưa làm. Liên quan WBS 1.6.
+**As a new user, I want to create an account so that I can use member features.** Proposed owner B, collaborating with C, reviewer D. Status Not started. WBS 1.6.
 
-- **AC1** Dữ liệu đăng ký hợp lệ tạo được tài khoản Member và người dùng có thể đăng nhập.
-- **AC2** Email đã tồn tại bị từ chối, kể cả trường hợp khác chữ hoa/thường theo quy tắc đã chốt.
-- **AC3** Mật khẩu được lưu bằng thuật toán hash của thư viện được chọn. API và log ứng dụng không trả mật khẩu hoặc hash.
-- **AC4** Người đăng ký không thể tự cấp quyền Admin qua dữ liệu gửi lên.
+- **AC1** Valid registration creates a Member account that can be used to log in.
+- **AC2** An existing email is rejected, including case variations according to the agreed rule.
+- **AC3** Passwords are hashed using the selected library. API responses and application logs expose neither passwords nor hashes.
+- **AC4** Registration input cannot grant Admin privileges to the applicant.
 
-### US-A02 Đăng nhập và đăng xuất
+### US-A02 Log In and Log Out
 
-**Là thành viên, tôi muốn đăng nhập và đăng xuất để truy cập dữ liệu của mình và kết thúc phiên khi dùng xong.** Phụ trách B, phối hợp C, review D. Trạng thái Chưa làm. WBS 1.6. Phụ thuộc US-A01.
+**As a Member, I want to log in and log out so that I can access my data and end my session when finished.** Owner B, collaborating with C, reviewer D. Status Not started. WBS 1.6. Depends on US-A01.
 
-- **AC1** Đúng thông tin đăng nhập tạo phiên hợp lệ, tải lại trang vẫn nhận diện được người dùng trong thời hạn phiên.
-- **AC2** Sai thông tin bị từ chối với thông báo thống nhất.
-- **AC3** Đăng xuất làm phiên hết hiệu lực ở backend. Gọi lại API bằng phiên cũ bị từ chối.
-- **AC4** Request chưa đăng nhập tới chức năng được bảo vệ nhận HTTP 401.
-- **AC5** Quyền Admin được kiểm tra tại backend khi gọi trực tiếp API.
+- **AC1** Correct credentials create a valid session that survives page refresh within its lifetime.
+- **AC2** Incorrect credentials are rejected with a consistent message.
+- **AC3** Logout invalidates the session at the backend. Reusing the old session for an API request is rejected.
+- **AC4** Unauthenticated requests to protected features receive HTTP 401.
+- **AC5** The backend enforces Admin authorization for direct API requests.
 
-### US-H01 Cập nhật hồ sơ
+### US-H01 Update a Profile
 
-**Là thành viên, tôi muốn lưu thông tin hồ sơ để hệ thống có đủ đầu vào tính các chỉ số đã thống nhất.** Phụ trách A, phối hợp B/C, review E. Trạng thái Chưa làm. WBS 1.7. Phụ thuộc US-A02 và D-02.
+**As a Member, I want to save profile information so that the system has the inputs needed for the agreed calculations.** Owner A, collaborating with B/C, reviewer E. Status Not started. WBS 1.7. Depends on US-A02 and D-02.
 
-- **AC1** Các trường, đơn vị, giá trị hợp lệ và trường bắt buộc được mô tả trước khi làm form.
-- **AC2** Lưu hồ sơ thành công, tải lại vẫn thấy đúng dữ liệu của tài khoản đó.
-- **AC3** Input sai trả thông báo phù hợp, bản hồ sơ đã lưu giữ nguyên.
-- **AC4** Thành viên khác không đọc hoặc sửa được hồ sơ bằng cách đổi ID trong request.
+- **AC1** Fields, units, valid values, and required inputs are specified before the form is implemented.
+- **AC2** A saved profile displays the same account's data after page refresh.
+- **AC3** Invalid input produces an appropriate message and leaves the saved profile unchanged.
+- **AC4** Another member cannot read or modify the profile by changing an ID in the request.
 
-### US-H02 Ghi nhận số đo
+### US-H02 Record Body Measurements
 
-**Là thành viên, tôi muốn lưu cân nặng và chiều cao để theo dõi thay đổi của mình theo thời gian.** Phụ trách B/C, A chốt quy tắc, review D. Trạng thái Một phần. WBS 1.7. Phụ thuộc US-A02.
+**As a Member, I want to save weight and height so that I can track my changes over time.** Owners B/C, rules coordinated by A, reviewer D. Status Partial. WBS 1.7. Depends on US-A02.
 
-- **AC1** Số đo hợp lệ được lưu cùng người sở hữu và thời điểm do server tạo.
-- **AC2** Bản ghi vẫn đọc lại được sau khi tải lại trang và khởi động lại ứng dụng.
-- **AC3** Chiều cao bằng 0 và input ngoài giới hạn bị từ chối, không tạo bản ghi.
-- **AC4** Backend lấy người sở hữu từ phiên đăng nhập. Gửi `user_id` của người khác không cho phép ghi thay họ.
-- **AC5** Khi lưu thất bại, giao diện báo lỗi và không hiện bản ghi như đã lưu thành công.
+- **AC1** Valid measurements are stored with their owner and a server-generated timestamp.
+- **AC2** Records remain readable after page refresh and application restart.
+- **AC3** Zero height and out-of-range input are rejected without creating a record.
+- **AC4** The backend obtains ownership from the authenticated session. Submitting another user's `user_id` cannot create records on their behalf.
+- **AC5** A failed save displays an error without presenting an unsaved record as successfully stored.
 
-**Bằng chứng hiện có** — Tạo/đọc số đo và từ chối input sai có test. Chủ sở hữu và auth cần bổ sung. Test hiện tại mới đối chiếu một phần AC1–AC3.
+**Existing evidence** — Tests cover creation/retrieval and invalid input. Authentication and ownership are pending. Current tests cover parts of AC1–AC3.
 
-### US-H03 Xem BMI
+### US-H03 View BMI
 
-**Là thành viên, tôi muốn xem BMI từ số đo của mình để biết kết quả tính toán theo công thức hệ thống sử dụng.** Phụ trách A/C, review E. Trạng thái Một phần. WBS 1.7. Phụ thuộc US-H02.
+**As a Member, I want to view BMI from my measurements so that I can see the result of the system's formula.** Owners A/C, reviewer E. Status Partial. WBS 1.7. Depends on US-H02.
 
-- **AC1** 70 kg và 175 cm cho kết quả hiển thị 22.86.
-- **AC2** Backend chuyển cm sang mét, dùng công thức và cách làm tròn đã ghi trong S1-R02.
-- **AC3** Kết quả gắn với số đo của chính người đang đăng nhập. Khi chưa có số đo, màn hình hướng dẫn nhập dữ liệu.
-- **AC4** Có kiểm thử ví dụ đã tính độc lập và các giới hạn đầu vào được nhóm chấp nhận.
+- **AC1** 70 kg and 175 cm produce a displayed BMI of 22.86.
+- **AC2** The backend converts centimetres to metres and applies the formula and rounding in S1-R02.
+- **AC3** Results belong to the signed-in member's measurements. With no measurements, the screen prompts for input.
+- **AC4** Tests use independently calculated examples and team-approved input boundaries.
 
-### US-H04 Xem TDEE
+### US-H04 View TDEE
 
-**Là thành viên, tôi muốn xem ước tính năng lượng tiêu hao mỗi ngày từ hồ sơ và số đo để sử dụng cho các chức năng lập kế hoạch sau này.** Phụ trách A, phối hợp B/C, review E. Trạng thái Chờ quyết định D-02. WBS 1.7.
+**As a Member, I want to view estimated daily energy expenditure from my profile and measurements so that later planning features can use it.** Owner A, collaborating with B/C, reviewer E. Status Awaiting D-02. WBS 1.7.
 
-- **AC1** Nhóm ghi rõ công thức, nguồn, đầu vào, hệ số hoạt động, phạm vi sử dụng và cách làm tròn.
-- **AC2** Tối thiểu hai ví dụ tính độc lập được đối chiếu bằng unit test trước khi tích hợp.
-- **AC3** Thiếu đầu vào bắt buộc thì chỉ rõ trường cần bổ sung, kết quả chưa sẵn sàng.
-- **AC4** UI ghi đơn vị kcal/ngày và thể hiện đây là giá trị ước tính.
+- **AC1** The team documents the equation, source, inputs, activity factors, applicable population, and rounding.
+- **AC2** Unit tests verify at least two independently calculated examples before integration.
+- **AC3** Missing required inputs identify the fields to complete and leave the result unavailable.
+- **AC4** The interface shows kcal/day and identifies the value as an estimate.
 
-### US-H05 Xem lịch sử và biểu đồ
+### US-H05 View History and Charts
 
-**Là thành viên, tôi muốn xem lịch sử và biểu đồ số đo của mình để theo dõi các lần ghi nhận.** Phụ trách C, phối hợp B, review F. Trạng thái Một phần. WBS 1.7. Phụ thuộc US-H02.
+**As a Member, I want to view my measurement history and charts so that I can track recorded changes.** Owner C, collaborating with B, reviewer F. Status Partial. WBS 1.7. Depends on US-H02.
 
-- **AC1** Bảng và biểu đồ chỉ dùng số đo thuộc tài khoản hiện tại.
-- **AC2** Bảng mặc định hiển thị mới nhất trước. Biểu đồ dùng trình tự thời gian tăng dần và ghi rõ đơn vị.
-- **AC3** Lưu số đo mới rồi tải lại thì bảng và biểu đồ cùng cập nhật từ dữ liệu đã lưu.
-- **AC4** Trạng thái chưa có dữ liệu, đang tải và lỗi API đều được xử lý rõ ràng.
+- **AC1** The table and chart use measurements belonging to the current account.
+- **AC2** The table defaults to newest first. The chart uses chronological order and labels units.
+- **AC3** After saving and refreshing, the table and chart update from persisted data.
+- **AC4** Empty, loading, and API error states are handled clearly.
 
-**Bằng chứng hiện có** — Có bảng lịch sử dùng dữ liệu chung. Cần bổ sung bộ lọc chủ sở hữu và biểu đồ.
+**Existing evidence** — A shared history table is available. Ownership filtering and charts are pending.
 
-### US-AD01 Quản lý trạng thái tài khoản
+### US-AD01 Manage Account Status
 
-**Là Admin, tôi muốn xem danh sách và khóa/mở khóa tài khoản để quản lý quyền sử dụng hệ thống.** Phụ trách B/C, review D. Trạng thái Chưa làm. WBS 1.8. Phụ thuộc US-A02.
+**As an Admin, I want to list, lock, and unlock accounts so that I can manage system access.** Owners B/C, reviewer D. Status Not started. WBS 1.8. Depends on US-A02.
 
-- **AC1** Admin xem được danh sách cùng trạng thái tài khoản và thực hiện khóa/mở khóa.
-- **AC2** Member gọi trực tiếp API quản trị bị từ chối bằng HTTP 403.
-- **AC3** Sau khi bị khóa, tài khoản không đăng nhập mới và không dùng tiếp phiên cũ để truy cập API được bảo vệ.
-- **AC4** Sau khi mở khóa, tài khoản có thể đăng nhập lại, dữ liệu cũ còn nguyên.
-- **AC5** Mật khẩu và hash được loại khỏi phản hồi danh sách tài khoản.
+- **AC1** Admins can list accounts and their status, and lock/unlock accounts.
+- **AC2** Members calling administration APIs directly receive HTTP 403.
+- **AC3** A locked account cannot start a new session or use an old session to access protected APIs.
+- **AC4** Unlocking an account allows login again and retains its previous data.
+- **AC5** Account lists omit passwords and password hashes.
 
-## Quy tắc của Sprint 1
+## Sprint 1 Rules
 
-### Quy tắc Sprint 1
+| ID | Rule | Status |
+| --- | --- | --- |
+| S1-R01 | Weight is greater than 0 and at most 500 kg. Height is 50–250 cm. Both allow at most 2 decimal places. | Used in the demo, limits await team confirmation |
+| S1-R02 | BMI = kg / (cm / 100)². The backend rounds the displayed result to 2 decimal places using ROUND_HALF_UP. | Implemented with an example test |
+| S1-R03 | Recording time is server-generated and timezone-aware. The current interface uses the viewer's local timezone. | Available in the demo, final display awaits D-05 |
+| S1-R04 | Members read/write their own data using backend-authenticated identity. | Target requirement, implementation pending |
+| S1-R05 | Admins manage account status. Locked users are denied access even through old sessions. | Target requirement, implementation pending |
+| S1-R06 | Invalid data returns HTTP 422 with error information. Unauthenticated requests return 401 and unauthorized requests return 403. | 422 available, 401/403 pending |
+| S1-R07 | Tests use `fitness_test`, separate from `fitness_demo`. | Implemented in the test command |
 
+Update D-01–D-07 in the [shared decision table](../PROJECT_SPEC.md#open-decisions). Update sprint rules here and record changes in the revision history.
 
-| Mã    | Quy tắc                                                                                                      | Tình trạng                                                 |
-| ------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| S1-R01 | Cân nặng lớn hơn 0 và tối đa 500 kg. Chiều cao từ 50 đến 250 cm. Tối đa 2 số thập phân.       | Đã dùng trong bản demo, nhóm cần xác nhận giới hạn |
-| S1-R02 | BMI = kg / (cm / 100)². Backend làm tròn kết quả hiển thị tới 2 số thập phân bằng ROUND_HALF_UP.  | Có code và test ví dụ                                    |
-| S1-R03 | Thời điểm ghi nhận do server tạo, lưu kiểu timezone-aware. Hiện UI dùng giờ máy người xem.       | Có trong demo, cách hiển thị cuối chờ D-05             |
-| S1-R04 | Member đọc/ghi dữ liệu riêng qua danh tính đã xác thực ở backend.                                  | Yêu cầu mục tiêu, chưa triển khai                      |
-| S1-R05 | Admin quản lý trạng thái tài khoản, tài khoản khóa bị từ chối truy cập cả với phiên cũ.      | Yêu cầu mục tiêu, chưa triển khai                      |
-| S1-R06 | Dữ liệu sai trả HTTP 422 và thông tin lỗi. Request chưa đăng nhập trả 401, thiếu quyền trả 403. | 422 có sẵn, 401/403 cần triển khai                       |
-| S1-R07 | Database thử nghiệm là`fitness_test`, tách khỏi `fitness_demo`.                                          | Có trong lệnh test                                         |
+## API and Data
 
-Các quyết định D-01–D-07 được cập nhật tại [bảng quyết định chung](../PROJECT_SPEC.md#quyết-định-cần-chốt). Sửa quy tắc tại file sprint này và ghi lịch sử thay đổi ở cuối file.
+| Method and path | Input | Success | Errors |
+| --- | --- | --- | --- |
+| `POST /api/measurements` | JSON `weight_kg`, `height_cm` following S1-R01 | 201 with saved record and BMI | 422 invalid input, 503 database failure |
+| `GET /api/measurements` | `limit` from 1 to 100, default 30 | 200 with records, newest first | 422 invalid limit, 503 database failure |
+| `GET /docs` | Open in a browser | Swagger UI | Requires a running backend |
 
-## API và dữ liệu
-
-| Method và đường dẫn | Đầu vào                                    | Thành công                            | Trường hợp lỗi               |
-| ------------------------ | --------------------------------------------- | --------------------------------------- | -------------------------------- |
-| `POST /api/measurements` | JSON gồm`weight_kg`, `height_cm` theo S1-R01 | 201 với bản ghi và BMI               | 422 input sai, 503 lỗi database |
-| `GET /api/measurements`  | `limit` từ 1 đến 100, mặc định 30       | 200 với danh sách, mới nhất trước | 422 limit sai, 503 lỗi database |
-| `GET /docs`              | Mở trên trình duyệt                       | Swagger UI                              | Cần backend đang chạy         |
-
-Ví dụ request và response thành công dưới đây dùng dữ liệu minh họa. `id` và thời điểm thực tế do hệ thống tạo.
+The request/response example uses fictional data. The system generates the actual `id` and timestamp.
 
 ```json
 {"weight_kg": 70, "height_cm": 175}
@@ -143,122 +140,118 @@ Ví dụ request và response thành công dưới đây dùng dữ liệu minh 
 }
 ```
 
-**Thay đổi cần có cho auth** — Giữ hành vi lưu/đọc hợp lệ, thêm kiểm tra phiên và lọc chủ sở hữu cho hai endpoint. B và C ghi trước contract của register/login/logout/current-user/profile/admin vào spec khi chốt D-03, rồi cùng dùng contract đó để code và test.
+**Authentication changes** — Preserve valid save/read behavior and add session checks and ownership filtering to both endpoints. B and C document contracts for register/login/logout/current-user/profile/admin after D-03 is finalized, then use those contracts for implementation and tests.
 
-### Dữ liệu
+### Data Model
 
-Hiện `measurements` có `id`, `weight_kg`, `height_cm`, `created_at`. Có ràng buộc giới hạn cân nặng và chiều cao ở database. BMI được tính khi trả kết quả.
+The existing `measurements` table contains `id`, `weight_kg`, `height_cm`, and `created_at`. Database constraints enforce weight and height ranges. BMI is calculated when returning the result.
 
+| Planned component | Design requirement |
+| --- | --- |
+| `users` | Primary key, unique normalized email, password hash, role, and locked status |
+| `profiles` | One profile per user, with fields and limits following D-02 |
+| `sessions` | User association, expiry, and revocation on logout or account locking |
+| `measurements.user_id` | Foreign key to users, used for ownership checks |
 
-| Thành phần cần bổ sung | Yêu cầu thiết kế                                                                    |
-| -------------------------- | --------------------------------------------------------------------------------------- |
-| `users`                    | Khóa chính, email chuẩn hóa duy nhất, hash mật khẩu, role và trạng thái khóa |
-| `profiles`                 | Mỗi user một hồ sơ, trường và giới hạn theo D-02                               |
-| `sessions`                 | Gắn user, có thời hạn và thu hồi được khi logout hoặc khóa tài khoản       |
-| `measurements.user_id`     | Khóa ngoại tới users, dùng để kiểm tra quyền sở hữu                           |
+Existing fictional records have no owner. Before the authentication migration, the team decides how to assign them to a demo account or otherwise handle them with the data holder's agreement. Record conversion steps and preservation checks in S1-03.
 
-Các bản ghi giả lập cũ đang thiếu chủ sở hữu. Trước migration auth, nhóm cần quyết định cách gán vào tài khoản demo hoặc xử lý chúng với sự đồng ý của người giữ dữ liệu. Ghi cách chuyển đổi và kiểm tra bảo toàn dữ liệu trong task S1-03.
+## Tasks and Assignments
 
-## Công việc và phân công
+Use **Not started → In progress → In review → Done**. Use **Blocked** with a reason and the person needed to help. Tasks, names, and deadlines await member confirmation.
 
-Trạng thái sử dụng gồm **Chưa làm → Đang làm → Chờ review → Hoàn thành**. Dùng **Bị chặn** kèm lý do và người cần hỗ trợ. Các task dưới đây là kế hoạch đề xuất, tên và hạn chưa được thành viên xác nhận.
+| Task | Deliverable | Proposed owner / reviewer | Dependencies | Due | Status | Issue or PR |
+| --- | --- | --- | --- | --- | --- | --- |
+| S1-01 | Finalize criteria, limits, and D-01/D-02/D-07 | A / E | Team meeting | To be filled | Not started | Not created |
+| S1-02 | Figma auth/profile/dashboard/admin and error states | C / A | Relevant parts of S1-01 | To be filled | Not started | Not created |
+| S1-03 | User/profile/session/measurement ERD and migration | B / D | D-03, profile design | To be filled | Not started | Not created |
+| S1-04 | Register/login/logout/current-user contracts and backend | B / D | D-03, S1-03 | To be filled | Not started | Not created |
+| S1-05 | Authentication and profile interface | C + A / E | S1-04 contract, S1-02 | To be filled | Not started | Not created |
+| S1-06 | Ownership filtering for measurements and cross-account tests | B + D / A | S1-03, S1-04 | To be filled | Not started | Not created |
+| S1-07 | Sourced TDEE equation, independent examples, and unit tests | A / E | D-02 | To be filled | Not started | Not created |
+| S1-08 | BMI/TDEE dashboard and history chart | C / F | S1-06, S1-07 | To be filled | Not started | Not created |
+| S1-09 | Admin lock/unlock and locked-user session tests | B + C / D | S1-04 | To be filled | Not started | Not created |
+| S1-10 | Second-machine setup, browser testing, and staging | F / C | D-06, integrated flow | To be filled | Not started | Not created |
+| S1-11 | Sprint 1 review, feedback, and improvements | A + F / whole team | Acceptance results | To be filled | Not started | Not created |
 
+Owners can split large tasks into smaller issues linked to the original task/story. Record contributions so the team can identify who analyzed, implemented, tested, and reviewed each part.
 
-| Task  | Kết quả cần giao                                             | Chủ việc / review đề xuất | Phụ thuộc                | Hạn         | Trạng thái | Issue hoặc PR |
-| ----- | --------------------------------------------------------------- | ------------------------------ | -------------------------- | ------------ | ------------ | -------------- |
-| S1-01 | Chốt AC, giới hạn và D-01/D-02/D-07                         | A / E                          | Họp nhóm                 | Chưa điền | Chưa làm   | Chưa tạo     |
-| S1-02 | Figma auth/profile/dashboard/admin, trạng thái lỗi           | C / A                          | S1-01 cho phần liên quan | Chưa điền | Chưa làm   | Chưa tạo     |
-| S1-03 | ERD user/profile/session/measurement và migration              | B / D                          | D-03, thiết kế hồ sơ   | Chưa điền | Chưa làm   | Chưa tạo     |
-| S1-04 | Contract và backend register/login/logout/current-user         | B / D                          | D-03, S1-03                | Chưa điền | Chưa làm   | Chưa tạo     |
-| S1-05 | Giao diện auth và profile                                     | C + A / E                      | Contract S1-04, S1-02      | Chưa điền | Chưa làm   | Chưa tạo     |
-| S1-06 | Lọc chủ sở hữu khi lưu/đọc số đo, test truy cập chéo | B + D / A                      | S1-03, S1-04               | Chưa điền | Chưa làm   | Chưa tạo     |
-| S1-07 | TDEE với nguồn, ví dụ độc lập và unit test              | A / E                          | D-02                       | Chưa điền | Chưa làm   | Chưa tạo     |
-| S1-08 | Dashboard BMI/TDEE và biểu đồ lịch sử                     | C / F                          | S1-06, S1-07               | Chưa điền | Chưa làm   | Chưa tạo     |
-| S1-09 | Admin khóa/mở khóa và test phiên của user bị khóa       | B + C / D                      | S1-04                      | Chưa điền | Chưa làm   | Chưa tạo     |
-| S1-10 | Chạy máy thứ hai, kiểm thử trình duyệt và staging       | F / C                          | D-06, luồng tích hợp    | Chưa điền | Chưa làm   | Chưa tạo     |
-| S1-11 | Review Sprint 1, phản hồi và việc cải thiện               | A + F / cả nhóm              | Kết quả nghiệm thu      | Chưa điền | Chưa làm   | Chưa tạo     |
+## Testing and Acceptance
 
-Người nhận việc có thể chia task lớn thành các issue nhỏ, giữ liên kết về task và story gốc. Mọi thành viên ghi đóng góp cụ thể để nhìn được ai đã phân tích, code, test và review phần nào.
+### Requirements and Evidence
 
-## Kiểm thử và nghiệm thu
+| Story or foundation | Existing evidence | Additional acceptance evidence |
+| --- | --- | --- |
+| Measurement persistence | `test_save_then_read` | Restart app/database, compare records, and name the tester |
+| US-H02 | `test_invalid_input_does_not_save` with 9 invalid inputs | Authentication, ownership, and save failures |
+| US-H03 | `test_bmi_known_example`, `test_save_then_read` | Member-owned flow and agreed boundary cases |
+| US-H05 | `test_newest_first_and_limit` | Ownership filtering, charts, and error/empty/loading states |
+| US-A01, US-A02 | None yet | Duplicate email, invalid login, logout, expiry, and Admin permissions |
+| US-H01, US-H04 | None yet | Valid/invalid profiles, cross-account access, and independent TDEE examples |
+| US-AD01 | None yet | Member denial, old-session locking, unlocking, and data preservation |
+| CI | EV-01 | Successful CI for the demonstrated commit |
 
-### Đối chiếu yêu cầu với bằng chứng
-
-
-| Story hoặc nền tảng  | Bằng chứng hiện có                              | Cần bổ sung để nghiệm thu                                                   |
-| ----------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------- |
-| Nền tảng lưu số đo | `test_save_then_read`                               | Khởi động lại app/database rồi đối chiếu bản ghi, ghi người kiểm tra |
-| US-H02                  | `test_invalid_input_does_not_save` với 9 input sai | Auth, quyền sở hữu và lỗi khi lưu                                          |
-| US-H03                  | `test_bmi_known_example`, `test_save_then_read`     | Luồng riêng của Member và các ca biên theo rule đã chốt                 |
-| US-H05                  | `test_newest_first_and_limit`                       | Lọc theo tài khoản, biểu đồ và giao diện lỗi/empty/loading              |
-| US-A01, US-A02          | Chưa có                                           | Đăng ký trùng email, login sai, logout, phiên hết hạn và quyền Admin    |
-| US-H01, US-H04          | Chưa có                                           | Hồ sơ hợp lệ/sai, truy cập chéo, TDEE theo ví dụ độc lập              |
-| US-AD01                 | Chưa có                                           | Member bị từ chối, khóa phiên cũ, mở khóa và bảo toàn dữ liệu       |
-| CI                      | EV-01                                               | Giữ CI thành công ở commit đem trình bày                                  |
-
-Các test hiện có nằm trong [tests/test_measurements.py](../../tests/test_measurements.py). Chạy tại thư mục gốc repo trên Windows bằng lệnh sau.
+Existing tests are in [tests/test_measurements.py](../../tests/test_measurements.py). Run from the repository root on Windows.
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py test
 ```
 
-Áp dụng [điều kiện Done chung](../PROJECT_SPEC.md#điều-kiện-hoàn-thành). Một story có auth và dữ liệu riêng cần đạt các AC đó trước khi ghi hoàn thành.
+Apply the [shared Definition of Done](../PROJECT_SPEC.md#definition-of-done). Stories involving authentication and private data must meet those criteria before completion.
 
-### Kịch bản review
+### Review Checklist
 
-- [ ] Mở backlog và chỉ ra story đã đạt, một phần hoặc chưa đạt.
-- [ ] Demo đăng ký/login, lưu số đo hợp lệ và xem lại sau refresh.
-- [ ] Demo input sai, truy cập chéo tài khoản bị từ chối và logout vô hiệu phiên cũ.
-- [ ] Đối chiếu BMI/TDEE với ví dụ độc lập, mở biểu đồ lịch sử.
-- [ ] Demo Member bị từ chối API admin, Admin khóa/mở khóa và kiểm tra phiên cũ.
-- [ ] Mở ERD, API contract, migration và kết quả test/CI của commit demo.
-- [ ] Ghi phản hồi, lỗi còn mở và hành động cải thiện cho Sprint 2.
+- [ ] Show the backlog and identify completed, partial, and pending stories.
+- [ ] Demonstrate registration/login, valid measurement saving, and retrieval after refresh.
+- [ ] Demonstrate invalid input, rejection of cross-account access, and logout invalidating an old session.
+- [ ] Compare BMI/TDEE with independent examples and show the history chart.
+- [ ] Demonstrate Member denial on admin APIs, account locking/unlocking, and old-session checks.
+- [ ] Show the ERD, API contracts, migrations, and tests/CI for the demo commit.
+- [ ] Record feedback, open defects, and improvements for Sprint 2.
 
-## Nhật ký và bằng chứng
+## Work Log and Evidence
 
-### Bằng chứng đã xác định
+### Verified Evidence
 
+| ID | Date | Event | Verification source | Limits of the evidence |
+| --- | --- | --- | --- | --- |
+| EV-01 | 19 November 2026 | Build and test completed successfully at commit `a2e3eea` | [GitHub Actions run 44459130985](https://github.com/DozenBro/group13-smart-nutrition-fitness/actions/runs/44459130985) | Confirms frontend build, migration, and backend tests. Story review and acceptance require separate evidence |
+| EV-02 | 19 November 2026 | Initial measurement/BMI code created with AI assistance at the user's request | Commit `cb29921`, backend/frontend/test/migration files in the repository | Team attribution to A–F is pending |
 
-| Mã   | Ngày      | Sự kiện                                                                              | Nguồn kiểm tra                                                                                                       | Giới hạn kết luận                                                                                     |
-| ----- | ---------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| EV-01 | 19/11/2026 | Workflow Build and test hoàn thành success tại commit`a2e3eea`                      | [GitHub Actions run 44459130985](https://github.com/DozenBro/group13-smart-nutrition-fitness/actions/runs/44459130985) | Có build frontend, migration và test backend. Cần bằng chứng riêng cho review và nghiệm thu story |
-| EV-02 | 19/11/2026 | Code khởi tạo số đo/BMI được tạo với hỗ trợ AI theo yêu cầu người dùng | Commit`cb29921`, các file backend/frontend/test/migration trong repo                                                  | Nhóm chưa xác nhận phân bổ đóng góp cho A–F                                                     |
+Earlier verification recorded 12 passing PostgreSQL tests and browser checks for saving, refresh, invalid input, and a narrow screen. Members should rerun the checks on their machines and record their names and results when accepting the handover.
 
-Lần kiểm tra trước đã ghi nhận 12 bài test đạt trên PostgreSQL và kiểm tra trình duyệt cho lưu/refresh/input sai/màn hình hẹp. Thành viên cần chạy lại trên máy của mình, ghi tên và kết quả khi xác nhận nhận bàn giao.
+### Member and AI Activity Log
 
-### Nhật ký thao tác của thành viên và AI
+Add an entry for each session producing a handover result, such as a rule decision, code change, test run, or review. Link longer records in issues/PRs. No session has yet been confirmed under the name of a member A–F.
 
-Thêm một mục cho mỗi phiên làm việc tạo ra kết quả cần bàn giao, chẳng hạn chốt quy tắc, sửa code, chạy test hoặc review. Liên kết log chi tiết trong issue/PR khi nội dung dài. Hiện chưa có phiên làm việc nào được xác nhận dưới tên thành viên A–F.
-
-Điền mẫu dưới đây hoặc liên kết bản bàn giao trong issue/PR. Mã log cho sprint này dùng tiền tố S1-LOG.
+Complete the template below or link the handover in its issue/PR. Use the S1-LOG prefix for this sprint.
 
 ```text
-Mã nhật ký: S1-LOG-[số tăng dần]
-Ngày giờ và múi giờ: [thời điểm thực tế]
-Thành viên chịu trách nhiệm: [tên và vai trò]
-Task / story / issue: [mã và liên kết]
-Commit hoặc nhánh bắt đầu: [giá trị thực tế]
-Mục tiêu: [kết quả muốn tạo]
-AI hỗ trợ: [công cụ, model nếu biết, hoặc không dùng]
-Nội dung yêu cầu AI: [tóm tắt hoặc link, bỏ thông tin bí mật]
-Phần AI tạo hoặc đề xuất: [cụ thể]
-Phần thành viên đã kiểm tra hoặc chỉnh lại: [cụ thể]
-File thay đổi: [đường dẫn tương đối]
-Lệnh hoặc thao tác kiểm tra: [đã chạy thực tế]
-Kết quả và bằng chứng: [pass/fail/chưa chạy, link hoặc output ngắn]
-Người review và kết luận: [tên, kết luận, hoặc chờ review]
-Commit / PR bàn giao: [liên kết thực tế, hoặc chưa có]
-Blocker và bước tiếp theo: [nếu có]
+Log ID: S1-LOG-[sequence number]
+Date, time, and timezone: [actual time]
+Responsible member: [name and role]
+Task / story / issue: [IDs and links]
+Starting commit or branch: [actual value]
+Goal: [expected outcome]
+AI assistance: [tool, model if known, or none]
+Request to AI: [summary or link, with secrets removed]
+AI-generated work or proposals: [specific details]
+What the member verified or changed: [specific details]
+Changed files: [relative paths]
+Verification commands or steps: [actually executed]
+Results and evidence: [pass/fail/not run, link or short output]
+Reviewer and conclusion: [name and conclusion, or awaiting review]
+Handover commit / PR: [actual link, or unavailable]
+Blockers and next steps: [if any]
 ```
 
+| Log | Member | Task | Result summary | Evidence | Review status |
+| --- | --- | --- | --- | --- | --- |
+| No confirmed member entry yet | To be filled | To be filled | To be filled | To be filled | Awaiting entry |
 
-| Nhật ký                              | Thành viên | Task         | Kết quả ngắn | Bằng chứng | Trạng thái review |
-| -------------------------------------- | ------------ | ------------ | --------------- | ------------ | ------------------- |
-| Chưa có mục thành viên xác nhận | Chưa điền | Chưa điền | Chưa điền    | Chưa điền | Chờ điền         |
+## Revision History
 
-## Lịch sử tài liệu
-
-| Phiên bản | Ngày | Nội dung | Người xác nhận |
+| Version | Date | Change | Confirmation |
 | --- | --- | --- | --- |
-| 0.1 | 19/11/2026 | Story, AC và bảng việc ban đầu nằm trong PROJECT_SPEC.md, đối chiếu code a2e3eea | Soạn với AI, chờ nhóm xác nhận |
-| 0.2 | 19/11/2026 | Tách Sprint 1, giữ story/AC/task và bằng chứng đã có, thêm kịch bản review | Soạn với AI, chờ nhóm xác nhận |
+| 0.1 | 19 November 2026 | Initial stories, criteria, and tasks in PROJECT_SPEC.md, baseline a2e3eea | Prepared with AI, awaiting team confirmation |
+| 0.2 | 19 November 2026 | Split Sprint 1, retaining stories/criteria/tasks/evidence and adding the review checklist | Prepared with AI, awaiting team confirmation |
+| 0.3 | 19 November 2026 | Translate into English and update navigation links | Awaiting team review |
