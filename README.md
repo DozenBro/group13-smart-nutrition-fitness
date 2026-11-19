@@ -162,7 +162,11 @@ Workflow [Build and test](https://github.com/DozenBro/group13-smart-nutrition-fi
 ├── migrations/              # Lịch sử thay đổi schema
 ├── tests/                   # Kiểm thử backend
 ├── docs/
-│   └── PROJECT_SPEC.md      # Yêu cầu, công việc và bằng chứng thực hiện
+│   ├── PROJECT_SPEC.md      # Phạm vi, kiến trúc và quy trình chung
+│   └── sprints/
+│       ├── SPRINT_1.md      # Health tracking và tài khoản
+│       ├── SPRINT_2.md      # Workout và streak
+│       └── SPRINT_3.md      # Meals, tích hợp và phát hành
 ├── .github/workflows/ci.yml # Pipeline build và test
 ├── alembic.ini
 ├── manage.py                # Quản lý database local, migration, chạy app và test
@@ -178,14 +182,14 @@ Workflow [Build and test](https://github.com/DozenBro/group13-smart-nutrition-fi
 4. Mở pull request, liên kết task, mô tả thay đổi và kết quả kiểm tra.
 5. Nhờ một thành viên khác review trước khi merge.
 
-Phân công, user story, quy tắc và mẫu ghi nhận công việc có hỗ trợ AI được lưu trong [PROJECT_SPEC.md](docs/PROJECT_SPEC.md).
+Đọc [spec tổng](docs/PROJECT_SPEC.md) và spec của sprint đang làm trước khi nhận task. Mỗi sprint giữ user story, điều kiện nghiệm thu, bảng việc, kết quả kiểm tra và nhật ký AI riêng.
 
 ## Lộ trình
 
 | Giai đoạn | Nội dung |
 | --- | --- |
-| Sprint 1 | Tài khoản, phân quyền, hồ sơ, BMI/TDEE, biểu đồ và quản lý tài khoản |
-| Sprint 2 | Danh mục bài tập, kế hoạch tập, ghi nhận hoàn thành và streak |
-| Sprint 3 | Dữ liệu món Việt, gợi ý bữa ăn, ghi nhận bữa ăn và hoàn thiện bản phát hành |
+| [Sprint 1](docs/sprints/SPRINT_1.md) | Tài khoản, phân quyền, hồ sơ, BMI/TDEE, biểu đồ và quản lý tài khoản |
+| [Sprint 2](docs/sprints/SPRINT_2.md) | Danh mục bài tập, kế hoạch tập, ghi nhận hoàn thành và streak |
+| [Sprint 3](docs/sprints/SPRINT_3.md) | Dữ liệu món Việt, gợi ý bữa ăn, ghi nhận bữa ăn và hoàn thiện bản phát hành |
 
 Trạng thái chi tiết và các quyết định chờ xác nhận được cập nhật trong [đặc tả dự án](docs/PROJECT_SPEC.md).
