@@ -60,7 +60,7 @@ Luồng khi bấm Lưu là **form → POST /api/measurements → kiểm tra dữ
 
 Đây là giới hạn kỹ thuật ban đầu cho dữ liệu giả lập. Nhóm cần chốt lại giới hạn và đối tượng người dùng trong rule sheet. Bản ghi hiện dùng chung trong bản học thử. Mốc tiếp theo là thêm tài khoản và gắn mỗi bản ghi với người sở hữu.
 
-## Việc sáu người có thể làm ngay
+## Việc 
 
 | Người | Việc đầu tiên | Bằng chứng cần mang lại |
 | --- | --- | --- |
