@@ -1,3 +1,5 @@
+Đọc [đặc tả dự án và bảng theo dõi công việc](docs/PROJECT_SPEC.md) để xem user story, điều kiện nghiệm thu, phân công và mẫu nhật ký làm việc với AI.
+
 ## Chạy trên máy đang làm việc
 
 1. Mở thư mục `smart-fitness` và chạy `START.cmd`.
