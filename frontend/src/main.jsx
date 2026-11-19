@@ -9,10 +9,10 @@ async function request(path, options) {
     if (Array.isArray(body.detail)) {
       const field = body.detail[0]?.loc?.at(-1);
       throw new Error(field === 'weight_kg'
-        ? 'Cân nặng phải lớn hơn 0 và không quá 500 kg, tối đa 2 chữ số thập phân.'
-        : 'Chiều cao phải từ 50 đến 250 cm, tối đa 2 chữ số thập phân.');
+        ? 'Weight must be greater than 0 and no more than 500 kg, with up to 2 decimal places.'
+        : 'Height must be between 50 and 250 cm, with up to 2 decimal places.');
     }
-    throw new Error(body.detail || 'Yêu cầu chưa thành công. Hãy thử lại.');
+    throw new Error(body.detail || 'The request failed. Please try again.');
   }
   return response.json();
 }
@@ -32,7 +32,7 @@ function App() {
     try {
       setRows(await request('/api/measurements'));
     } catch (e) {
-      setError(e.message || 'Chưa kết nối được máy chủ.');
+      setError(e.message || 'Unable to connect to the server.');
     } finally {
       setLoading(false);
     }
@@ -46,7 +46,7 @@ function App() {
     setMessage('');
     setError('');
     if (weight.trim() === '' || height.trim() === '') {
-      setError('Hãy nhập đầy đủ cân nặng và chiều cao.');
+      setError('Enter both weight and height.');
       return;
     }
     setSaving(true);
@@ -57,10 +57,10 @@ function App() {
         body: JSON.stringify({ weight_kg: Number(weight), height_cm: Number(height) }),
       });
       setRows(previous => [row, ...previous].slice(0, 30));
-      setMessage('Đã lưu số đo. Bạn có thể tải lại trang để kiểm tra.');
+      setMessage('Measurement saved. You can refresh the page to check it.');
       setWeight('');
     } catch (e) {
-      setError(e.message || 'Chưa lưu được số đo.');
+      setError(e.message || 'Unable to save the measurement.');
     } finally {
       setSaving(false);
     }
@@ -71,35 +71,35 @@ function App() {
     <main>
       <header>
         <p className="eyebrow">GROUP 13 · SMART NUTRITION & FITNESS</p>
-        <h1>Theo dõi số đo</h1>
-        <p>Lưu cân nặng, chiều cao và xem lại các lần ghi nhận.</p>
+        <h1>Body measurements</h1>
+        <p>Record your weight and height, and review your history.</p>
       </header>
-      <p className="notice">Bản thực hành dùng dữ liệu giả lập. Đang phát triển chức năng tài khoản.</p>
+      <p className="notice">Practice demo with fictional data. Account features are in development.</p>
       <div className="layout">
         <section className="entry" aria-labelledby="entry-title">
-          <h2 id="entry-title">Ghi nhận mới</h2>
+          <h2 id="entry-title">New measurement</h2>
           <form onSubmit={save} noValidate>
-            <label htmlFor="weight">Cân nặng <span>kg</span></label>
-            <input id="weight" type="number" inputMode="decimal" step="0.01" placeholder="Ví dụ 70" value={weight} onChange={e => setWeight(e.target.value)} disabled={saving} />
-            <label htmlFor="height">Chiều cao <span>cm</span></label>
-            <input id="height" type="number" inputMode="decimal" step="0.01" placeholder="Ví dụ 175" value={height} onChange={e => setHeight(e.target.value)} disabled={saving} />
-            <button type="submit" disabled={saving || loading}>{saving ? 'Đang lưu…' : 'Lưu số đo'}</button>
+            <label htmlFor="weight">Weight <span>kg</span></label>
+            <input id="weight" type="number" inputMode="decimal" step="0.01" placeholder="For example, 70" value={weight} onChange={e => setWeight(e.target.value)} disabled={saving} />
+            <label htmlFor="height">Height <span>cm</span></label>
+            <input id="height" type="number" inputMode="decimal" step="0.01" placeholder="For example, 175" value={height} onChange={e => setHeight(e.target.value)} disabled={saving} />
+            <button type="submit" disabled={saving || loading}>{saving ? 'Saving…' : 'Save measurement'}</button>
           </form>
           {error && <p role="alert" className="error">{error}</p>}
           {message && <p role="status" className="success">{message}</p>}
         </section>
         <section aria-labelledby="history-title">
           <div className="section-heading">
-            <h2 id="history-title">Lịch sử gần đây</h2>
-            <button className="secondary" onClick={loadHistory} disabled={loading || saving}>Tải lại</button>
+            <h2 id="history-title">Recent history</h2>
+            <button className="secondary" onClick={loadHistory} disabled={loading || saving}>Reload</button>
           </div>
-          {latest && <p className="latest">BMI gần nhất <strong>{latest.bmi.toFixed(2)}</strong><span>BMI = cân nặng / (chiều cao theo mét)²</span></p>}
-          {loading ? <p role="status">Đang tải lịch sử…</p> : rows.length === 0 ? <p className="empty">Chưa có số đo. Hãy thêm lần ghi nhận đầu tiên.</p> :
+          {latest && <p className="latest">Latest BMI <strong>{latest.bmi.toFixed(2)}</strong><span>BMI = weight in kg / (height in metres)²</span></p>}
+          {loading ? <p role="status">Loading history…</p> : rows.length === 0 ? <p className="empty">No measurements yet. Add your first record.</p> :
             <div className="table-scroll"><table>
-              <caption>30 lần ghi nhận gần nhất, mới nhất ở trên.</caption>
-              <thead><tr><th>Thời gian</th><th>kg</th><th>cm</th><th>BMI</th></tr></thead>
+              <caption>The 30 most recent records, newest first.</caption>
+              <thead><tr><th>Recorded at</th><th>kg</th><th>cm</th><th>BMI</th></tr></thead>
               <tbody>{rows.map(row => <tr key={row.id}>
-                <td>{new Date(row.created_at).toLocaleString('vi-VN')}</td>
+                <td>{new Date(row.created_at).toLocaleString('en-GB')}</td>
                 <td>{row.weight_kg}</td><td>{row.height_cm}</td><td>{row.bmi.toFixed(2)}</td>
               </tr>)}</tbody>
             </table></div>}

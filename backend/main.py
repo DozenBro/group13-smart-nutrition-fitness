@@ -49,7 +49,7 @@ def measurement_output(row: Measurement) -> MeasurementOutput:
 async def database_error(request, error):
     logging.getLogger(__name__).error('Database operation failed (%s)', type(error).__name__)
     return JSONResponse(status_code=503, content={
-        'detail': 'Chưa kết nối được cơ sở dữ liệu. Hãy thử lại sau.'
+        'detail': 'Unable to connect to the database. Please try again later.'
     })
 
 
