@@ -1,98 +1,191 @@
-Đọc [đặc tả dự án và bảng theo dõi công việc](docs/PROJECT_SPEC.md) để xem user story, điều kiện nghiệm thu, phân công và mẫu nhật ký làm việc với AI.
+# Smart Nutrition & Fitness
 
-## Chạy trên máy đang làm việc
+[![Build and test](https://github.com/DozenBro/group13-smart-nutrition-fitness/actions/workflows/ci.yml/badge.svg)](https://github.com/DozenBro/group13-smart-nutrition-fitness/actions/workflows/ci.yml)
 
-1. Mở thư mục `smart-fitness` và chạy `START.cmd`.
-2. Giữ cửa sổ đó mở. Truy cập `http://127.0.0.1:8013`.
-3. Nhập **70 kg**, **175 cm**, bấm **Lưu số đo**. Kết quả BMI mong đợi là **22.86**.
-4. Tải lại trang. Bản ghi vẫn hiện trong lịch sử.
-5. Nhập **70 kg**, **0 cm**. Trang phải báo lỗi và lịch sử giữ nguyên.
+Ứng dụng web hỗ trợ theo dõi số đo cơ thể, lập kế hoạch tập luyện và gợi ý bữa ăn Việt Nam. Dự án được phát triển bởi **Group 13** trong môn Công nghệ phần mềm.
 
-Chạy API trực tiếp tại `http://127.0.0.1:8013/docs`. Chọn `POST /api/measurements`, bấm **Try it out**, rồi gửi ví dụ sau.
+Phiên bản hiện tại cung cấp luồng ghi nhận cân nặng, chiều cao, tính BMI và lưu lịch sử trên PostgreSQL. Các chức năng tài khoản, TDEE, tập luyện và bữa ăn đang được phát triển theo kế hoạch sprint.
 
-```json
-{"weight_kg": 70, "height_cm": 175}
+## Tính năng
+
+- Ghi nhận cân nặng và chiều cao với kiểm tra đầu vào ở backend.
+- Tính BMI và hiển thị kết quả với hai chữ số thập phân.
+- Xem bảng 30 số đo gần nhất, mới nhất ở trên.
+- Lưu dữ liệu trong PostgreSQL và tải lại lịch sử qua API.
+- Thử API trực tiếp bằng Swagger UI.
+- Kiểm thử tự động và build frontend qua GitHub Actions.
+
+> Bản hiện tại sử dụng dữ liệu giả lập và lịch sử dùng chung. Chức năng đăng nhập và quyền sở hữu dữ liệu được triển khai ở mốc tiếp theo của Sprint 1.
+
+## Công nghệ
+
+| Thành phần | Công cụ |
+| --- | --- |
+| Frontend | React, Vite, JavaScript, CSS |
+| Backend | Python, FastAPI, Pydantic |
+| Database | PostgreSQL |
+| ORM và migration | SQLAlchemy, Alembic |
+| Kiểm thử | pytest, FastAPI TestClient |
+| CI | GitHub Actions |
+
+Giao diện gửi request JSON tới FastAPI. Backend kiểm tra dữ liệu, thực hiện tính toán và đọc/ghi PostgreSQL thông qua SQLAlchemy. Alembic quản lý phiên bản schema.
+
+## Yêu cầu môi trường
+
+Hướng dẫn chạy local dưới đây dành cho **Windows và PowerShell**, sử dụng các phiên bản đã kiểm tra trong dự án.
+
+- Python **3.14**
+- Node.js **24** kèm npm
+- PostgreSQL **18**, gồm `initdb` và `pg_ctl`
+- Git
+
+Script `manage.py` quản lý PostgreSQL local trên Windows. CI sử dụng PostgreSQL service riêng trên Ubuntu.
+
+## Cài đặt
+
+### 1. Lấy mã nguồn
+
+```powershell
+git clone https://github.com/DozenBro/group13-smart-nutrition-fitness.git
+cd group13-smart-nutrition-fitness
 ```
 
-Để dừng website, bấm `Ctrl+C` ở cửa sổ chạy. PostgreSQL riêng của dự án tiếp tục chạy. Dừng nó bằng lệnh sau trong thư mục `smart-fitness`.
+Repo riêng tư yêu cầu tài khoản GitHub đã được cấp quyền truy cập.
+
+### 2. Cài thư viện Python
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
+
+### 3. Cài và build frontend
+
+```powershell
+cd frontend
+npm install
+npm run build
+cd ..
+```
+
+## Chạy ứng dụng
+
+Chạy từ thư mục gốc repo.
+
+```powershell
+.\.venv\Scripts\python.exe manage.py run
+```
+
+Hoặc mở `START.cmd` sau khi hoàn tất cài đặt và build.
+
+| Địa chỉ | Nội dung |
+| --- | --- |
+| `http://127.0.0.1:8013` | Giao diện ứng dụng |
+| `http://127.0.0.1:8013/docs` | Swagger UI |
+
+Lần đầu chạy, script khởi tạo vùng dữ liệu PostgreSQL riêng tại `.local/postgres`, tạo database, áp dụng migration và khởi động FastAPI. Mật khẩu được sinh ngẫu nhiên và lưu tại `.local/database.json` trên từng máy.
+
+| Cấu hình local | Giá trị |
+| --- | --- |
+| Địa chỉ PostgreSQL | `127.0.0.1:55432` |
+| Database ứng dụng | `fitness_demo` |
+| Database kiểm thử | `fitness_test` |
+| Tài khoản PostgreSQL | `fitness` |
+
+Script tìm PostgreSQL trong PATH hoặc thư mục cài mặc định trên Windows. Nếu PostgreSQL được cài ở vị trí khác, đặt `POSTGRES_BIN` tới thư mục `bin` trước khi chạy. Ví dụ với vị trí cài mặc định của PostgreSQL 18:
+
+```powershell
+$env:POSTGRES_BIN = "C:\Program Files\PostgreSQL\18\bin"
+.\.venv\Scripts\python.exe manage.py run
+```
+
+Dừng FastAPI bằng `Ctrl+C`. Để dừng PostgreSQL riêng của dự án, chạy:
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py stop-db
 ```
 
-## Cách chạy trên máy của thành viên khác
+Các thư mục `.local`, `.venv`, `frontend/node_modules` và `frontend/dist` được bỏ qua khi commit bằng Git.
 
-Cài Python 3.12 trở lên, Node.js 22.12 trở lên và PostgreSQL 18 trên Windows. Các bản cài trong nhóm nên cùng phiên bản để dễ hỗ trợ nhau. Sau khi nhận code, chạy các lệnh sau trong thư mục `smart-fitness`.
+## Phát triển giao diện
+
+Giữ backend chạy bằng `manage.py run`. Trong terminal thứ hai, mở thư mục `frontend` và chạy Vite:
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 cd frontend
-npm install
-npm run build
-cd ..
-.\.venv\Scripts\python.exe manage.py run
+npm run dev
 ```
 
-Script tìm PostgreSQL trong PATH hoặc thư mục cài mặc định trên Windows. Nếu cài ở nơi khác, đặt biến `POSTGRES_BIN` tới thư mục `bin` của PostgreSQL trước khi chạy. Script tạo cụm dữ liệu riêng trong `.local/postgres`, dùng cổng `55432`, tài khoản `fitness` và mật khẩu ngẫu nhiên lưu trong `.local/database.json`. Thư mục `.local` được bỏ qua khi dùng Git. Website chỉ lắng nghe trên máy hiện tại.
+Truy cập địa chỉ local Vite in ra trong terminal, mặc định là `http://127.0.0.1:5173`. Request `/api` được chuyển tới FastAPI ở cổng `8013`.
 
-Máy dựng bản đầu đã chạy bằng Python 3.14, Node.js 24 và PostgreSQL 18. Các thư viện Python đã được ghi phiên bản trong `requirements.txt`. Khi chia sẻ, gửi code và hướng dẫn, bỏ qua `.venv`, `.local` và `frontend/node_modules`.
+Vite cập nhật giao diện khi sửa code. Khi dùng giao diện do FastAPI phục vụ ở cổng `8013`, chạy lại `npm run build` sau khi sửa frontend. Khởi động lại backend sau khi sửa code Python.
 
-## Đọc code theo thứ tự này
+## API
 
-| File | Bạn cần hiểu gì? |
-| --- | --- |
-| `frontend/src/main.jsx` | Form lấy dữ liệu, gọi API bằng `fetch`, hiển thị kết quả và lỗi |
-| `backend/main.py` | FastAPI nhận request, kiểm tra dữ liệu và gọi thao tác lưu/đọc |
-| `backend/models.py` | Bản ghi số đo có những cột nào và giới hạn ở database |
-| `backend/database.py` | SQLAlchemy tạo kết nối và phiên làm việc với PostgreSQL |
-| `backend/health.py` | Chuyển chiều cao sang mét và tính BMI |
-| `migrations/versions/001_measurements.py` | Alembic tạo bảng có phiên bản để các máy thống nhất schema |
-| `tests/test_measurements.py` | Kiểm tra lưu/đọc, thứ tự lịch sử, ví dụ BMI và dữ liệu sai |
-
-Luồng khi bấm Lưu là **form → POST /api/measurements → kiểm tra dữ liệu → INSERT trong PostgreSQL → trả bản ghi về form**. Khi tải lại trang, frontend gửi `GET /api/measurements` để lấy 30 bản ghi gần nhất.
-
-## Quy tắc tạm dùng để nhóm thảo luận
-
-- Cân nặng lớn hơn 0 và tối đa 500 kg.
-- Chiều cao từ 50 đến 250 cm.
-- Hai số có tối đa 2 chữ số thập phân.
-- BMI = cân nặng kg / (chiều cao mét)², làm tròn kết quả hiển thị tới 2 số thập phân.
-- Thời gian ghi nhận do server tạo, frontend hiển thị theo giờ máy người xem.
-
-Đây là giới hạn kỹ thuật ban đầu cho dữ liệu giả lập. Nhóm cần chốt lại giới hạn và đối tượng người dùng trong rule sheet. Bản ghi hiện dùng chung trong bản học thử. Mốc tiếp theo là thêm tài khoản và gắn mỗi bản ghi với người sở hữu.
-
-## Việc 
-
-| Người | Việc đầu tiên | Bằng chứng cần mang lại |
+| Method | Endpoint | Chức năng |
 | --- | --- | --- |
-| A | Đọc công thức và giới hạn đầu vào, đề xuất quy tắc đã thống nhất | Một ví dụ hợp lệ, một ví dụ sai và kết quả mong đợi |
-| B | Chạy API trên Swagger, đọc model và migration | Giải thích bản ghi lưu ở đâu và API đọc lại thế nào |
-| C | Chạy form và thử thu nhỏ màn hình | Chỉ ra code gửi request và code hiện thông báo lỗi |
-| D | Chạy thử luồng lưu và đề xuất các ca cần kiểm tra thêm | Một lỗi thực tế hoặc một trường hợp biên cần xử lý |
-| E | Bắt đầu thu thập ba món ăn theo mẫu trong kế hoạch | Khẩu phần, kcal, giá VND, nguồn và ngày thu thập |
-| F | Chạy trên máy thứ hai, chạy test và ghi lại trở ngại | Kết quả chạy, phiên bản công cụ, bước cài còn thiếu |
+| `POST` | `/api/measurements` | Lưu số đo và trả kết quả BMI |
+| `GET` | `/api/measurements` | Đọc lịch sử số đo |
 
-## Chạy kiểm thử
+Ví dụ body cho `POST /api/measurements`:
+
+```json
+{
+  "weight_kg": 70,
+  "height_cm": 175
+}
+```
+
+Request hợp lệ trả HTTP `201` với bản ghi đã lưu và BMI `22.86`. Dữ liệu sai trả HTTP `422`. Với endpoint đọc lịch sử, `limit` mặc định là `30`, hỗ trợ từ `1` đến `100`.
+
+Các trường, giới hạn và điều kiện nghiệm thu được mô tả trong [đặc tả dự án](docs/PROJECT_SPEC.md).
+
+## Kiểm thử
 
 ```powershell
 .\.venv\Scripts\python.exe manage.py test
 ```
 
-Lệnh này tạo hoặc dùng database **fitness_test**, áp dụng migration và chạy pytest. Các thay đổi của từng bài test được rollback. Database demo và database test có tên riêng.
+Lệnh sử dụng database `fitness_test`, áp dụng migration rồi chạy pytest. Bộ test hiện có 12 trường hợp, kiểm tra công thức BMI, lưu/đọc, dữ liệu sai, thứ tự lịch sử và giới hạn truy vấn.
 
-Kết quả kiểm tra ban đầu gồm **12 bài test API đạt**, build React thành công và kiểm tra bằng trình duyệt cho thao tác lưu, tải lại, từ chối chiều cao bằng 0 và màn hình hẹp. Một bản ghi giả lập 70 kg, 175 cm được lưu trong database demo khi kiểm tra.
+Workflow [Build and test](https://github.com/DozenBro/group13-smart-nutrition-fitness/actions/workflows/ci.yml) chạy khi push hoặc mở pull request. Pipeline khởi tạo PostgreSQL, áp dụng migration, chạy test backend và build frontend.
 
-File `.github/workflows/ci.yml` đã chuẩn bị lệnh build và test cho GitHub Actions. Khi nhóm tạo repo và push code, mở mục Actions để xem kết quả thực tế của lần chạy đầu.
+## Cấu trúc dự án
 
-## Sau bản đầu tiên
+```text
+.
+├── backend/                 # API, model, kết nối database và tính BMI
+├── frontend/
+│   ├── src/                 # Giao diện React và CSS
+│   ├── package.json
+│   └── vite.config.js
+├── migrations/              # Lịch sử thay đổi schema
+├── tests/                   # Kiểm thử backend
+├── docs/
+│   └── PROJECT_SPEC.md      # Yêu cầu, công việc và bằng chứng thực hiện
+├── .github/workflows/ci.yml # Pipeline build và test
+├── alembic.ini
+├── manage.py                # Quản lý database local, migration, chạy app và test
+├── requirements.txt
+└── START.cmd
+```
 
-1. Ghi nhận phản hồi khi cả nhóm chạy thử và chốt quy tắc đầu vào.
-2. Tạo kho GitHub chung, đưa các việc còn lại thành issue và dùng pull request để review.
-3. Thêm đăng ký, đăng nhập, phiên đăng nhập, phân quyền và chủ sở hữu số đo.
-4. Thêm hồ sơ đủ dữ liệu cho TDEE, test công thức rồi thêm biểu đồ lịch sử.
-5. Thêm admin khóa/mở khóa, kiểm thử tích hợp và chuẩn bị review Sprint 1.
+## Đóng góp
 
-Hãy dùng dữ liệu giả lập ở mốc này. Việc đăng nhập, TDEE, biểu đồ, admin, Docker Compose và triển khai staging sẽ được xây tiếp theo các issue của Sprint 1.
+1. Nhận task và thống nhất điều kiện nghiệm thu trong issue.
+2. Tạo nhánh theo công việc, ví dụ `feature/S1-06-measurement-owner`.
+3. Thực hiện thay đổi và chạy kiểm thử liên quan.
+4. Mở pull request, liên kết task, mô tả thay đổi và kết quả kiểm tra.
+5. Nhờ một thành viên khác review trước khi merge.
 
-Tài liệu công cụ cho thành viên muốn tìm hiểu thêm được cung cấp bởi [FastAPI](https://fastapi.tiangolo.com/tutorial/sql-databases/), [Vite](https://vite.dev/guide/) và [PostgreSQL](https://www.postgresql.org/download/windows/).
+Phân công, user story, quy tắc và mẫu ghi nhận công việc có hỗ trợ AI được lưu trong [PROJECT_SPEC.md](docs/PROJECT_SPEC.md).
+
+## Lộ trình
+
+| Giai đoạn | Nội dung |
+| --- | --- |
+| Sprint 1 | Tài khoản, phân quyền, hồ sơ, BMI/TDEE, biểu đồ và quản lý tài khoản |
+| Sprint 2 | Danh mục bài tập, kế hoạch tập, ghi nhận hoàn thành và streak |
+| Sprint 3 | Dữ liệu món Việt, gợi ý bữa ăn, ghi nhận bữa ăn và hoàn thiện bản phát hành |
+
+Trạng thái chi tiết và các quyết định chờ xác nhận được cập nhật trong [đặc tả dự án](docs/PROJECT_SPEC.md).
