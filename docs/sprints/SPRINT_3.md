@@ -1,6 +1,6 @@
 # Sprint 3 Vietnamese Meals and Release
 
-**Draft 0.2 · 19 November 2026 · Implementation pending**
+**Draft 0.3 · 20 November 2026 · Implementation pending**
 
 Read the [main specification](../PROJECT_SPEC.md), TDEE/ownership in [Sprint 1](SPRINT_1.md), and streak/completion in [Sprint 2](SPRINT_2.md). Scope follows WBS 3.1–3.7. Final acceptance references WBS 4.1–4.2.
 
@@ -8,7 +8,7 @@ Read the [main specification](../PROJECT_SPEC.md), TDEE/ownership in [Sprint 1](
 
 **Demo flow** — Member has a profile and energy target → enters preferences/budget → receives a meal plan → records completion → activity/streak updates. The complete health → workout → meal flow works on staging.
 
-Reuse Sprint 1 authentication/profile data and Sprint 2 date/streak rules. Data collection and independent meal-algorithm experiments can start early. The team must confirm task status, assignments, and dates below.
+Reuse Sprint 1 authentication/profile data and Sprint 2 date/streak rules. Data collection and independent meal-algorithm experiments can start early. Names follow the main specification roster. The team must record task acknowledgements, reviewer availability, actual status, and dates below.
 
 | Item | Value |
 | --- | --- |
@@ -21,7 +21,7 @@ Reuse Sprint 1 authentication/profile data and Sprint 2 date/streak rules. Data 
 
 ### US-AD03 Manage Vietnamese Foods
 
-**As an Admin, I want to manage foods and nutrition data so that meal suggestions use reliable catalog information.** Owner E, collaborating with C, reviewer A. Status Not started. WBS 3.2.
+**As an Admin, I want to manage foods and nutrition data so that meal suggestions use reliable catalog information.** Owner Thắng, collaborating with Bảo, reviewer Tá Anh. Status Not started. WBS 3.2.
 
 - **AC1** Admins create, read, update, and delete/archive foods according to the agreed history-preservation policy.
 - **AC2** Every food includes portion, kcal, protein/carbohydrate/fat, and price in VND on the same portion basis, with nutrition sources and price context.
@@ -31,7 +31,7 @@ Reuse Sprint 1 authentication/profile data and Sprint 2 date/streak rules. Data 
 
 ### US-M01 Obtain and View Meal Suggestions
 
-**As a Member, I want Vietnamese meal suggestions based on energy targets, preferences, and budget so that plans reflect my choices.** Owner E, collaborating with C, reviewer D. Status Not started. WBS 3.3.
+**As a Member, I want Vietnamese meal suggestions based on energy targets, preferences, and budget so that plans reflect my choices.** Owner Thắng, collaborating with Bảo, reviewer Đạt. Status Not started. WBS 3.3.
 
 - **AC1** Valid inputs and sufficient data produce a plan meeting the agreed calorie, preference, and budget constraints.
 - **AC2** Missing target/profile data identifies what to complete. Invalid budgets or preferences are rejected.
@@ -41,7 +41,7 @@ Reuse Sprint 1 authentication/profile data and Sprint 2 date/streak rules. Data 
 
 ### US-M02 Record Meals and Update Activity
 
-**As a Member, I want to mark meals complete so that I can record nutrition habits alongside workouts.** Owners E + D, collaborating with C, reviewer B. Status Not started. WBS 3.4.
+**As a Member, I want to mark meals complete so that I can record nutrition habits alongside workouts.** Owners Thắng + Đạt, collaborating with Bảo, reviewer Tuấn Anh. Status Not started. WBS 3.4.
 
 - **AC1** Members complete only meals in their own plans, on permitted dates.
 - **AC2** Retries and concurrent requests create one completion for the same meal.
@@ -63,10 +63,10 @@ Record the inclusion/deferral decision, decision maker, and reason. If the instr
 
 | ID | Decision needed | Owner / status |
 | --- | --- | --- |
-| S3-D01 | Source of calorie targets, goal adjustments, acceptance of the CSV's ±10% tolerance, and inclusive/exclusive boundaries | A + E, awaiting decision |
-| S3-D02 | Supported preferences, daily budget, breakfast/lunch/dinner slots, portions, repeated foods, plan replacement, and undo | E + D, awaiting decision |
-| S3-D03 | Confirm the damaged symbol before 60, source/portion/price standards, and archiving policy | A + E, awaiting decision, provisional target 60 foods |
-| S3-D04 | Staging environment, feature-freeze date, UAT scenarios, and acceptance tester | F + A, awaiting decision with D-06 |
+| S3-D01 | Source of calorie targets, goal adjustments, acceptance of the CSV's ±10% tolerance, and inclusive/exclusive boundaries | Tá Anh + Thắng, awaiting decision |
+| S3-D02 | Supported preferences, daily budget, breakfast/lunch/dinner slots, portions, repeated foods, plan replacement, and undo | Thắng + Đạt, awaiting decision |
+| S3-D03 | Confirm the damaged symbol before 60, source/portion/price standards, and archiving policy | Tá Anh + Thắng, awaiting decision, provisional target 60 foods |
+| S3-D04 | Staging environment, feature-freeze date, UAT scenarios, and acceptance tester | Hưng + Tá Anh, awaiting decision with D-06 |
 
 **Proposed algorithm** — Filter valid foods by preferences and meal slots. Enumerate combinations using agreed portions. Retain combinations within budget and calorie constraints. Rank by smallest target deviation, then lower price, then stable IDs for explainability. Return no-match when no combination qualifies.
 
@@ -90,15 +90,15 @@ Document methods/paths, requests/responses, authentication, and error codes in t
 
 ## Tasks and Assignments
 
-| Task | Deliverable | Proposed owner / reviewer | Dependencies | Due | Status | Issue/PR |
+| Task | Deliverable | Assigned owner / reviewer | Dependencies | Due | Status | Issue/PR |
 | --- | --- | --- | --- | --- | --- | --- |
-| S3-01 | Prototype, meal rules, and success/no-match fixtures | E + C / A | D-02, S3-D01/S3-D02 | To be filled | Not started | Not created |
-| S3-02 | Schema/migration, contracts, food administration, and sourced seed data | E + B / D | S3-D03 | To be filled | Not started | Not created |
-| S3-03 | Recommendation algorithm and saved-plan interface | E + C / D | S3-01, S3-02 data | To be filled | Not started | Not created |
-| S3-04 | Meal completion and combined workout/meal streak | E + D / B | S3-03, Sprint 2 rules | To be filled | Not started | Not created |
+| S3-01 | Prototype, meal rules, and success/no-match fixtures | Thắng + Bảo / Tá Anh | D-02, S3-D01/S3-D02 | To be filled | Not started | Not created |
+| S3-02 | Schema/migration, contracts, food administration, and sourced seed data | Thắng + Tuấn Anh / Đạt | S3-D03 | To be filled | Not started | Not created |
+| S3-03 | Recommendation algorithm and saved-plan interface | Thắng + Bảo / Đạt | S3-01, S3-02 data | To be filled | Not started | Not created |
+| S3-04 | Meal completion and combined workout/meal streak | Thắng + Đạt / Tuấn Anh | S3-03, Sprint 2 rules | To be filled | Not started | Not created |
 | S3-05 | Challenges if confirmed in scope | To be assigned | D-04 | To be filled | Awaiting decision | Not created |
-| S3-06 | Regression, authorization, and cross-module error checks | F + whole team / B | Integrated health/workout/meal flows | To be filled | Not started | Not created |
-| S3-07 | Staging, user guide, demo, and release-candidate freeze | F + A / C | D-06, S3-D04, S3-06 | To be filled | Not started | Not created |
+| S3-06 | Regression, authorization, and cross-module error checks | Hưng + whole team / Tuấn Anh | Integrated health/workout/meal flows | To be filled | Not started | Not created |
+| S3-07 | Staging, user guide, demo, and release-candidate freeze | Hưng + Tá Anh / Bảo | D-06, S3-D04, S3-06 | To be filled | Not started | Not created |
 | S3-08 | Final UAT, defects, tag, and handover documents | Whole team / acceptance tester to be confirmed | Release candidate | To be filled | Not started | Not created |
 
 S3-08 covers final acceptance milestones WBS 4.1–4.2. Schedule these milestones using the actual submission date.
@@ -158,3 +158,4 @@ Blockers / next steps: [details]
 | --- | --- | --- | --- |
 | 0.1 | 19 November 2026 | Expand WBS 3.1–3.7 and final acceptance WBS 4.1–4.2 | Draft prepared with AI, awaiting team confirmation |
 | 0.2 | 19 November 2026 | Translate into English and update navigation links | Awaiting team review |
+| 0.3 | 20 November 2026 | Synchronize named owners and reviewers with the main specification roster | Names supplied by the user; task acknowledgements and reviews pending |

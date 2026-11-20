@@ -1,17 +1,18 @@
 # Group 13 Project Specification
 
-**Smart Nutrition and Fitness System · Draft 0.3 · 19 November 2026**
+**Smart Nutrition and Fitness System · Draft 0.4 · 20 November 2026**
 
-This document defines the shared scope, architecture, roles, and workflow. Each sprint document contains its stories, acceptance criteria, API/schema changes, tasks, tests, and work log. Assignments and deadlines await team confirmation.
+This document defines the shared scope, architecture, roles, and workflow. Each sprint document contains its stories, acceptance criteria, API/schema changes, tasks, tests, and work log. Member names follow the roster below. Task acknowledgements, reviewer availability, and deadlines still need to be recorded in the relevant issues.
 
 ## Document Map
 
-| File | Contents | Current status |
-| --- | --- | --- |
-| [PROJECT_SPEC.md](PROJECT_SPEC.md) | Shared goals, scope, architecture, and collaboration workflow | Shared draft |
+
+| File                               | Contents                                                                | Current status                                                   |
+| ---------------------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| [PROJECT_SPEC.md](PROJECT_SPEC.md) | Shared goals, scope, architecture, and collaboration workflow           | Shared draft                                                     |
 | [SPRINT_1.md](sprints/SPRINT_1.md) | Accounts, profiles, measurements, BMI/TDEE, history, and administration | Measurement/BMI demo available, full acceptance criteria pending |
-| [SPRINT_2.md](sprints/SPRINT_2.md) | Exercise catalog, workout plans, completion, and streaks | Proposed for refinement, implementation pending |
-| [SPRINT_3.md](sprints/SPRINT_3.md) | Vietnamese foods, meal suggestions, integration, and release | Proposed for refinement, implementation pending |
+| [SPRINT_2.md](sprints/SPRINT_2.md) | Exercise catalog, workout plans, completion, and streaks                | Proposed for refinement, implementation pending                  |
+| [SPRINT_3.md](sprints/SPRINT_3.md) | Vietnamese foods, meal suggestions, integration, and release            | Proposed for refinement, implementation pending                  |
 
 **Where to update information** — Update shared scope, architecture, and workflow here. Update story details and rules in the sprint that owns them. Later tasks should reference the original rule ID and document when reusing a rule.
 
@@ -19,21 +20,23 @@ This document defines the shared scope, architecture, roles, and workflow. Each 
 
 The web application lets Members save profiles and body measurements, view BMI and estimated energy expenditure, obtain workout plans and Vietnamese meal suggestions, and record completion to track habits. Admins manage accounts, exercises, and foods.
 
-| User | Goal |
-| --- | --- |
+
+| User   | Goal                                                    |
+| ------ | ------------------------------------------------------- |
 | Member | Manage personal data, view plans, and record activities |
-| Admin | Manage accounts and catalog data |
+| Admin  | Manage accounts and catalog data                        |
 
 Indicator calculations, plan selection, and streak updates are automated behavior inside the application. Actor definitions in use-case diagrams should match the team's system boundary.
 
 ## Scope and Delivery Plan
 
-| Stage | Expected demonstration | Planning reference |
-| --- | --- | --- |
-| Sprint 1 | Members use accounts and health tracking, Admins manage accounts | WBS 1.1–1.9 |
-| Sprint 2 | Goal → workout plan → completion → streak | WBS 2.1–2.8 |
-| Sprint 3 | Vietnamese meal suggestions → meal logging → integrated flow on staging | WBS 3.1–3.7 |
-| Final acceptance | UAT, defect fixes, handover documents, and presentation | WBS 4.1–4.2, checklist in Sprint 3 |
+
+| Stage            | Expected demonstration                                                    | Planning reference                  |
+| ---------------- | ------------------------------------------------------------------------- | ----------------------------------- |
+| Sprint 1         | Members use accounts and health tracking, Admins manage accounts          | WBS 1.1–1.9                        |
+| Sprint 2         | Goal → workout plan → completion → streak                              | WBS 2.1–2.8                        |
+| Sprint 3         | Vietnamese meal suggestions → meal logging → integrated flow on staging | WBS 3.1–3.7                        |
+| Final acceptance | UAT, defect fixes, handover documents, and presentation                   | WBS 4.1–4.2, checklist in Sprint 3 |
 
 Challenges await D-04 because the project description and plan differ. The current scope excludes Maps, food ordering, wearables, payments, social networking, medical diagnosis, and AI/LLM-generated plans.
 
@@ -41,16 +44,17 @@ The team must enter actual sprint dates and the submission deadline. The origina
 
 ## Roles and Responsibilities
 
-These assignments are proposed. Each owner confirms their task in its issue. Everyone tests their own work and obtains another member's review before marking it complete.
+Member names were entered in this main specification and synchronized on 20 November 2026. This table is the source for names and role codes in the sprint specifications, execution guide, beginner PDF, Agile plan, and tool checklist. Keep A–F as stable role codes; show names in task assignments. Each owner acknowledges their task in its issue; reviewers confirm availability there. Everyone tests their own work and obtains another member's review before marking it complete.
 
-| Role | Name | Responsibility | Sprint 1 support |
-| --- | --- | --- | --- |
-| A | To be filled | Requirements, profiles, BMI/TDEE | Finalize acceptance criteria, formulas, and hand-calculated examples |
-| B | To be filled | Backend, database, authentication | Design users/profiles/sessions, migrations, and ownership checks |
-| C | To be filled | Interface and integration | Figma, forms, login screens, dashboard, and charts |
-| D | To be filled | Sprint 2 workout module | Review edge cases, API tests, and access to other accounts' records |
-| E | To be filled | Sprint 3 meal module | Review profile inputs, try user journeys, and prepare sourced data |
-| F | To be filled | Setup, CI, deployment, and browser testing | Run on a second machine, retain CI links, and coordinate the demo |
+
+| Role | Name         | Responsibility                             | Sprint 1 support                                                     |
+| ---- | ------------ | ------------------------------------------ | -------------------------------------------------------------------- |
+| A    | Tá Anh       | Requirements, profiles, BMI/TDEE           | Finalize acceptance criteria, formulas, and hand-calculated examples |
+| B | Tuấn Anh | Backend, database, authentication | Design users/profiles/sessions, migrations, and ownership checks |
+| C | Bảo | Interface and integration | Figma, forms, login screens, dashboard, and charts |
+| D | Đạt | Sprint 2 workout module | Review edge cases, API tests, and access to other accounts' records |
+| E | Thắng | Sprint 3 meal module | Review profile inputs, try user journeys, and prepare sourced data |
+| F | Hưng | Setup, CI, deployment, and browser testing | Run on a second machine, retain CI links, and coordinate the demo |
 
 AI supports the assigned member. Every task has a person responsible for explaining and verifying its result. The initial code was created with AI assistance. The team has yet to confirm attribution of implementation contributions to A–F.
 
@@ -64,28 +68,30 @@ flowchart LR
     S --> DB[(PostgreSQL through SQLAlchemy)]
 ```
 
-| Area | Tools and status |
-| --- | --- |
-| Frontend | React + Vite, JavaScript, CSS, measurement form and history table available |
-| Backend/API | Python + FastAPI + Pydantic, REST/JSON, Swagger UI |
-| Database | PostgreSQL, SQLAlchemy models, Alembic migrations |
-| Testing and CI | pytest + FastAPI TestClient, successful GitHub Actions runs |
-| Additional design and testing | Figma, diagrams.net, and Playwright according to sprint tasks |
-| Startup and hosting | Windows local script available. Docker Compose and staging require implementation and verification |
+
+| Area                          | Tools and status                                                                                   |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+| Frontend                      | React + Vite, JavaScript, CSS, measurement form and history table available                        |
+| Backend/API                   | Python + FastAPI + Pydantic, REST/JSON, Swagger UI                                                 |
+| Database                      | PostgreSQL, SQLAlchemy models, Alembic migrations                                                  |
+| Testing and CI                | pytest + FastAPI TestClient, successful GitHub Actions runs                                        |
+| Additional design and testing | Figma, diagrams.net, and Playwright according to sprint tasks                                      |
+| Startup and hosting           | Windows local script available. Docker Compose and staging require implementation and verification |
 
 The code baseline `7e0f064` contains a shared measurement/BMI demo and 12 test cases. Sprint 1 documents the existing API/schema and planned additions. Installation and startup instructions are in the [README](../README.md).
 
 ## Open Decisions
 
+
 | ID | Question or proposal | Owner | Status | Decision and date |
-| --- | --- | --- | --- | --- |
-| D-01 | Confirm Sprint 1 scope and review date with the instructor | A | Awaiting confirmation | To be filled |
-| D-02 | Select the TDEE equation, source, and activity factors. The plan suggests Mifflin–St Jeor. | A | Awaiting source review and team decision | To be filled |
-| D-03 | Define valid emails/passwords, hashing library, session lifetime, cookies/CSRF, and initial Admin provisioning. The tool checklist proposes server sessions. | B | Awaiting design | To be filled |
-| D-04 | Are challenges required? The project description and CSV differ. | A | Awaiting instructor clarification | To be filled |
-| D-05 | Agree on the display timezone and which saved data can be edited | A + C | Awaiting team decision | To be filled |
-| D-06 | Select staging hosting, PostgreSQL requirements, and setup on other machines | F | Awaiting access checks | To be filled |
-| D-07 | Replace A–F with names and confirm task owners and reviewers | Whole team | Awaiting team meeting | To be filled |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ---------------------------------------- | ----------------- |
+| D-01 | Confirm Sprint 1 scope and review date with the instructor | Tá Anh | Awaiting confirmation | To be filled |
+| D-02 | Select the TDEE equation, source, and activity factors. The plan suggests Mifflin–St Jeor. | Tá Anh | Awaiting source review and team decision | To be filled |
+| D-03 | Define valid emails/passwords, hashing library, session lifetime, cookies/CSRF, and initial Admin provisioning. The tool checklist proposes server sessions. | Tuấn Anh | Awaiting design | To be filled |
+| D-04 | Are challenges required? The project description and CSV differ. | Tá Anh | Awaiting instructor clarification | To be filled |
+| D-05 | Agree on the display timezone and which saved data can be edited | Tá Anh + Bảo | Awaiting team decision | To be filled |
+| D-06 | Select staging hosting, PostgreSQL requirements, and setup on other machines | Hưng | Awaiting access checks | To be filled |
+| D-07 | Names are recorded; confirm individual task owners, reviewers, and deadlines | Whole team | Names recorded; task acknowledgements pending | Roster synchronized 20 November 2026; task reviews pending |
 
 When changing a rule, record the decision ID, reason, affected stories/API/schema/tests, decision maker, and date. Update the specification in the pull request implementing the change.
 
@@ -95,12 +101,12 @@ Workout/streak and meal decisions have separate tables in Sprints 2 and 3. Recor
 
 Acceptance criteria (AC) define verifiable outcomes for each story. Implementation and technical tasks link to their verification results.
 
-- [ ] All acceptance criteria for the story or task have been checked.
-- [ ] Relevant tests pass, with the commit, command, result, or CI run recorded.
-- [ ] Another person has reviewed the work and recorded their name and conclusion in the PR or log.
-- [ ] The interface, API, and database work together for the relevant flow.
-- [ ] The specification, API/migrations, and instructions reflect applicable changes.
-- [ ] Member contributions and AI assistance accurately describe the work performed.
+- [ ]  All acceptance criteria for the story or task have been checked.
+- [ ]  Relevant tests pass, with the commit, command, result, or CI run recorded.
+- [ ]  Another person has reviewed the work and recorded their name and conclusion in the PR or log.
+- [ ]  The interface, API, and database work together for the relevant flow.
+- [ ]  The specification, API/migrations, and instructions reflect applicable changes.
+- [ ]  Member contributions and AI assistance accurately describe the work performed.
 
 Use **Not started → In progress → In review → Done**. When using **Blocked**, record the question/error, person needed, and next diagnostic step. Assess progress using acceptance criteria and evidence. Planning tasks can finish while a software story remains in progress.
 
@@ -138,9 +144,10 @@ When switching AI tools or handing work to another person, provide the commit, t
 
 ## Immediate Team Actions
 
-| Priority | Next action | Verifiable outcome |
-| --- | --- | --- |
-| 1 | Assign names to A–F, set review dates, and confirm the remaining schedule | Every task has a confirmed owner, reviewer, and deadline |
+
+| Priority | Next action                                                                                  | Verifiable outcome                                                         |
+| -------- | -------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| 1 | Acknowledge the named task assignments, set review dates, and confirm the remaining schedule | Every task has a confirmed owner, reviewer, and deadline |
 | 2 | Check repository access for all six members and create/reconcile GitHub Issues and the board | Every active task has an issue and an accurate status |
 | 3 | Each member runs the demo on their own machine | The log names the tester, tool versions, and actual result or error |
 | 4 | Finalize authentication and the TDEE formula alongside Figma/ERD work | D-02/D-03 have decisions and verification examples |
@@ -150,10 +157,12 @@ When switching AI tools or handing work to another person, provide the commit, t
 
 ## Revision History and Sources
 
-| Version | Date | Change | Confirmation |
-| --- | --- | --- | --- |
-| 0.1 | 19 November 2026 | Initial combined Sprint 1 and shared workflow specification | Draft prepared with AI |
-| 0.2 | 19 November 2026 | Split the main and three sprint specifications, retaining Sprint 1 IDs and evidence | Draft awaiting team confirmation |
-| 0.3 | 19 November 2026 | Translate repository documentation into English and update navigation links | Translation awaiting team review |
 
-References include `Project Description.docx`, the Group 13 CSV plan, the project execution guide, the tool checklist, and repository code. Sprints 2 and 3 expand their corresponding WBS entries as proposals. The team confirms new algorithms, limits, and dates in the decision tables.
+| Version | Date             | Change                                                                              | Confirmation                     |
+| ------- | ---------------- | ----------------------------------------------------------------------------------- | -------------------------------- |
+| 0.1     | 19 November 2026 | Initial combined Sprint 1 and shared workflow specification                         | Draft prepared with AI           |
+| 0.2     | 19 November 2026 | Split the main and three sprint specifications, retaining Sprint 1 IDs and evidence | Draft awaiting team confirmation |
+| 0.3     | 19 November 2026 | Translate repository documentation into English and update navigation links         | Translation awaiting team review |
+| 0.4 | 20 November 2026 | Synchronize the roster across sprint assignments and planning artifacts | Names supplied by the user; task acknowledgements and reviews pending |
+
+References include `Project Description.docx`, the Group 13 Agile workbook (`Sprint_Agile_Group13 1.xlsx`, converted from the original CSV), the project execution guide, the tool checklist, and repository code. Sprints 2 and 3 expand their corresponding WBS entries as proposals. The team confirms new algorithms, limits, and dates in the decision tables.

@@ -1,8 +1,8 @@
 # Sprint 2 Workout Planning and Streaks
 
-**Draft 0.2 · 19 November 2026 · Implementation pending**
+**Draft 0.3 · 20 November 2026 · Implementation pending**
 
-Read the [main specification](../PROJECT_SPEC.md) and the authentication/ownership sections of [Sprint 1](SPRINT_1.md). This draft expands WBS 2.1–2.8 for refinement. Owners, reviewers, and algorithms require team confirmation.
+Read the [main specification](../PROJECT_SPEC.md) and the authentication/ownership sections of [Sprint 1](SPRINT_1.md). This draft expands WBS 2.1–2.8 for refinement. Named owners and reviewers follow the main specification roster. Task acknowledgements, reviewer availability, dates, and algorithms require confirmation.
 
 ## Goal and Dependencies
 
@@ -21,7 +21,7 @@ The integrated flow uses Sprint 1 accounts and ownership. Exercise data, prototy
 
 ### US-AD02 Manage the Exercise Catalog
 
-**As an Admin, I want to manage exercises and categories so that the system has data for workout planning.** Owner D, collaborating with C, reviewer B. Status Not started. WBS 2.3.
+**As an Admin, I want to manage exercises and categories so that the system has data for workout planning.** Owner Đạt, collaborating with Bảo, reviewer Tuấn Anh. Status Not started. WBS 2.3.
 
 - **AC1** Admins create, read, update, and delete/archive exercises and categories according to the agreed policy.
 - **AC2** Names, categories, equipment, difficulty, instructions, activity units, and sources are validated against the data template.
@@ -30,7 +30,7 @@ The integrated flow uses Sprint 1 accounts and ownership. Exercise data, prototy
 
 ### US-W01 Obtain and View a Goal-Based Plan
 
-**As a Member, I want a schedule matching my goal so that I know what to do each day.** Owner D, collaborating with C, reviewer A. Status Not started. WBS 2.4–2.5.
+**As a Member, I want a schedule matching my goal so that I know what to do each day.** Owner Đạt, collaborating with Bảo, reviewer Tá Anh. Status Not started. WBS 2.4–2.5.
 
 - **AC1** Weight loss, muscle gain, and maintenance each produce a valid plan when enough data is available.
 - **AC2** The plan specifies days/sessions, exercises, sets, and repetitions or duration according to the agreed template.
@@ -40,7 +40,7 @@ The integrated flow uses Sprint 1 accounts and ownership. Exercise data, prototy
 
 ### US-W04 Record Workout Completion
 
-**As a Member, I want to mark a workout session complete so that my activity is recorded.** Owner D, collaborating with C, reviewer B. Status Not started. WBS 2.6.
+**As a Member, I want to mark a workout session complete so that my activity is recorded.** Owner Đạt, collaborating with Bảo, reviewer Tuấn Anh. Status Not started. WBS 2.6.
 
 - **AC1** Only the owner can complete a session on an allowed date.
 - **AC2** The saved completion state persists after refresh.
@@ -50,7 +50,7 @@ The integrated flow uses Sprint 1 accounts and ownership. Exercise data, prototy
 
 ### US-S01 View the Activity Streak
 
-**As a Member, I want to view consecutive active days so that I can track my habits.** Owner D, reviewer F. Status Not started. WBS 2.6, extended in 3.4.
+**As a Member, I want to view consecutive active days so that I can track my habits.** Owner Đạt, reviewer Hưng. Status Not started. WBS 2.6, extended in 3.4.
 
 - **AC1** Completing multiple sessions on one date contributes one active day.
 - **AC2** Consecutive active dates extend the streak. After a full missed date, the next activity starts a new streak.
@@ -62,10 +62,10 @@ The integrated flow uses Sprint 1 accounts and ownership. Exercise data, prototy
 
 | ID | Proposal | Status / owner |
 | --- | --- | --- |
-| S2-D01 | Use reviewed templates for three goals. Define schedules, selection, units, rest between sessions, and plan regeneration/replacement | Awaiting D + A |
-| S2-D02 | Define catalog fields, deletion/archiving, and history preservation after catalog edits | Awaiting D + B |
-| S2-D03 | Confirm timezone with D-05, allowed completion dates, and undo/backdating. Proposed basis is server dates, counted once per day | Awaiting D + A |
-| S2-D04 | Confirm the damaged CSV symbol before 40. Use 40 exercises as the provisional seed target | Awaiting A |
+| S2-D01 | Use reviewed templates for three goals. Define schedules, selection, units, rest between sessions, and plan regeneration/replacement | Awaiting Đạt + Tá Anh |
+| S2-D02 | Define catalog fields, deletion/archiving, and history preservation after catalog edits | Awaiting Đạt + Tuấn Anh |
+| S2-D03 | Confirm timezone with D-05, allowed completion dates, and undo/backdating. Proposed basis is server dates, counted once per day | Awaiting Đạt + Tá Anh |
+| S2-D04 | Confirm the damaged CSV symbol before 40. Use 40 exercises as the provisional seed target | Awaiting Tá Anh |
 
 **Proposed streak calculation** — Obtain distinct dates with valid activity. If today is active, count the sequence ending today. Otherwise, if yesterday is active, retain the sequence ending yesterday. Other cases return 0. A new activity after a missed date starts a streak of 1.
 
@@ -89,16 +89,16 @@ These API groups define planned design work. Record methods/paths, requests/resp
 
 ## Tasks and Assignments
 
-| Task | Deliverable | Proposed owner / reviewer | Dependencies | Due | Status | Issue/PR |
+| Task | Deliverable | Assigned owner / reviewer | Dependencies | Due | Status | Issue/PR |
 | --- | --- | --- | --- | --- | --- | --- |
-| S2-01 | Prototype and story/workout/streak rule refinement | C + D / A | Sprint 1 feedback | To be filled | Not started | Not created |
-| S2-02 | ERD v2, migrations, contracts, and sequence diagram | D + B / F | S2-D01–S2-D03 | To be filled | Not started | Not created |
-| S2-03 | Admin catalog and reviewed seed dataset | D + C / E | S2-02, S2-D04 | To be filled | Not started | Not created |
-| S2-04 | Plan generation and tests for three goals/insufficient data | D / A | S2-02, trial data | To be filled | Not started | Not created |
-| S2-05 | Weekly schedule and plan details from the API | C / D | S2-02 contracts, S2-04 | To be filled | Not started | Not created |
-| S2-06 | Completion/streak logic and duplicate/date/permission tests | D / B + F | S2-04, S2-D03 | To be filled | Not started | Not created |
-| S2-07 | Integration, Sprint 1 regression, and data-preserving migration tests | F + A / B | Integrated flow | To be filled | Not started | Not created |
-| S2-08 | Review, feedback, challenge decision, and Sprint 3 planning | A + F / whole team | S2-07, D-04 | To be filled | Not started | Not created |
+| S2-01 | Prototype and story/workout/streak rule refinement | Bảo + Đạt / Tá Anh | Sprint 1 feedback | To be filled | Not started | Not created |
+| S2-02 | ERD v2, migrations, contracts, and sequence diagram | Đạt + Tuấn Anh / Hưng | S2-D01–S2-D03 | To be filled | Not started | Not created |
+| S2-03 | Admin catalog and reviewed seed dataset | Đạt + Bảo / Thắng | S2-02, S2-D04 | To be filled | Not started | Not created |
+| S2-04 | Plan generation and tests for three goals/insufficient data | Đạt / Tá Anh | S2-02, trial data | To be filled | Not started | Not created |
+| S2-05 | Weekly schedule and plan details from the API | Bảo / Đạt | S2-02 contracts, S2-04 | To be filled | Not started | Not created |
+| S2-06 | Completion/streak logic and duplicate/date/permission tests | Đạt / Tuấn Anh + Hưng | S2-04, S2-D03 | To be filled | Not started | Not created |
+| S2-07 | Integration, Sprint 1 regression, and data-preserving migration tests | Hưng + Tá Anh / Tuấn Anh | Integrated flow | To be filled | Not started | Not created |
+| S2-08 | Review, feedback, challenge decision, and Sprint 3 planning | Tá Anh + Hưng / whole team | S2-07, D-04 | To be filled | Not started | Not created |
 
 ## Testing and Review
 
@@ -145,3 +145,4 @@ Blockers / next steps: [details]
 | --- | --- | --- | --- |
 | 0.1 | 19 November 2026 | Expand WBS 2.1–2.8, retaining story IDs from the execution guide | Draft prepared with AI, awaiting team confirmation |
 | 0.2 | 19 November 2026 | Translate into English and update navigation links | Awaiting team review |
+| 0.3 | 20 November 2026 | Synchronize named owners and reviewers with the main specification roster | Names supplied by the user; task acknowledgements and reviews pending |

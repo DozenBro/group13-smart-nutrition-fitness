@@ -1,8 +1,8 @@
 # Sprint 1 Foundation and Health Tracking
 
-**Draft 0.3 · 19 November 2026 · Partially implemented**
+**Draft 0.4 · 20 November 2026 · Partially implemented**
 
-Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code baseline is `7e0f064`. The team must confirm start/review dates and member names. Scope follows WBS 1.1–1.9 in the group plan.
+Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code baseline is `7e0f064`. Names follow the main specification roster. Start/review dates and task acknowledgements remain pending. Scope follows WBS 1.1–1.9 in the group plan.
 
 ## Goal and Current Baseline
 
@@ -25,7 +25,7 @@ Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code
 
 ### US-A01 Register an Account
 
-**As a new user, I want to create an account so that I can use member features.** Proposed owner B, collaborating with C, reviewer D. Status Not started. WBS 1.6.
+**As a new user, I want to create an account so that I can use member features.** Owner Tuấn Anh, collaborating with Bảo, reviewer Đạt. Status Not started. WBS 1.6.
 
 - **AC1** Valid registration creates a Member account that can be used to log in.
 - **AC2** An existing email is rejected, including case variations according to the agreed rule.
@@ -34,7 +34,7 @@ Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code
 
 ### US-A02 Log In and Log Out
 
-**As a Member, I want to log in and log out so that I can access my data and end my session when finished.** Owner B, collaborating with C, reviewer D. Status Not started. WBS 1.6. Depends on US-A01.
+**As a Member, I want to log in and log out so that I can access my data and end my session when finished.** Owner Tuấn Anh, collaborating with Bảo, reviewer Đạt. Status Not started. WBS 1.6. Depends on US-A01.
 
 - **AC1** Correct credentials create a valid session that survives page refresh within its lifetime.
 - **AC2** Incorrect credentials are rejected with a consistent message.
@@ -44,7 +44,7 @@ Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code
 
 ### US-H01 Update a Profile
 
-**As a Member, I want to save profile information so that the system has the inputs needed for the agreed calculations.** Owner A, collaborating with B/C, reviewer E. Status Not started. WBS 1.7. Depends on US-A02 and D-02.
+**As a Member, I want to save profile information so that the system has the inputs needed for the agreed calculations.** Owner Tá Anh, collaborating with Tuấn Anh/Bảo, reviewer Thắng. Status Not started. WBS 1.7. Depends on US-A02 and D-02.
 
 - **AC1** Fields, units, valid values, and required inputs are specified before the form is implemented.
 - **AC2** A saved profile displays the same account's data after page refresh.
@@ -53,7 +53,7 @@ Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code
 
 ### US-H02 Record Body Measurements
 
-**As a Member, I want to save weight and height so that I can track my changes over time.** Owners B/C, rules coordinated by A, reviewer D. Status Partial. WBS 1.7. Depends on US-A02.
+**As a Member, I want to save weight and height so that I can track my changes over time.** Owners Tuấn Anh/Bảo, rules coordinated by Tá Anh, reviewer Đạt. Status Partial. WBS 1.7. Depends on US-A02.
 
 - **AC1** Valid measurements are stored with their owner and a server-generated timestamp.
 - **AC2** Records remain readable after page refresh and application restart.
@@ -65,7 +65,7 @@ Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code
 
 ### US-H03 View BMI
 
-**As a Member, I want to view BMI from my measurements so that I can see the result of the system's formula.** Owners A/C, reviewer E. Status Partial. WBS 1.7. Depends on US-H02.
+**As a Member, I want to view BMI from my measurements so that I can see the result of the system's formula.** Owners Tá Anh/Bảo, reviewer Thắng. Status Partial. WBS 1.7. Depends on US-H02.
 
 - **AC1** 70 kg and 175 cm produce a displayed BMI of 22.86.
 - **AC2** The backend converts centimetres to metres and applies the formula and rounding in S1-R02.
@@ -74,7 +74,7 @@ Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code
 
 ### US-H04 View TDEE
 
-**As a Member, I want to view estimated daily energy expenditure from my profile and measurements so that later planning features can use it.** Owner A, collaborating with B/C, reviewer E. Status Awaiting D-02. WBS 1.7.
+**As a Member, I want to view estimated daily energy expenditure from my profile and measurements so that later planning features can use it.** Owner Tá Anh, collaborating with Tuấn Anh/Bảo, reviewer Thắng. Status Awaiting D-02. WBS 1.7.
 
 - **AC1** The team documents the equation, source, inputs, activity factors, applicable population, and rounding.
 - **AC2** Unit tests verify at least two independently calculated examples before integration.
@@ -83,7 +83,7 @@ Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code
 
 ### US-H05 View History and Charts
 
-**As a Member, I want to view my measurement history and charts so that I can track recorded changes.** Owner C, collaborating with B, reviewer F. Status Partial. WBS 1.7. Depends on US-H02.
+**As a Member, I want to view my measurement history and charts so that I can track recorded changes.** Owner Bảo, collaborating with Tuấn Anh, reviewer Hưng. Status Partial. WBS 1.7. Depends on US-H02.
 
 - **AC1** The table and chart use measurements belonging to the current account.
 - **AC2** The table defaults to newest first. The chart uses chronological order and labels units.
@@ -94,7 +94,7 @@ Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code
 
 ### US-AD01 Manage Account Status
 
-**As an Admin, I want to list, lock, and unlock accounts so that I can manage system access.** Owners B/C, reviewer D. Status Not started. WBS 1.8. Depends on US-A02.
+**As an Admin, I want to list, lock, and unlock accounts so that I can manage system access.** Owners Tuấn Anh/Bảo, reviewer Đạt. Status Not started. WBS 1.8. Depends on US-A02.
 
 - **AC1** Admins can list accounts and their status, and lock/unlock accounts.
 - **AC2** Members calling administration APIs directly receive HTTP 403.
@@ -140,7 +140,7 @@ The request/response example uses fictional data. The system generates the actua
 }
 ```
 
-**Authentication changes** — Preserve valid save/read behavior and add session checks and ownership filtering to both endpoints. B and C document contracts for register/login/logout/current-user/profile/admin after D-03 is finalized, then use those contracts for implementation and tests.
+**Authentication changes** — Preserve valid save/read behavior and add session checks and ownership filtering to both endpoints. Tuấn Anh and Bảo document contracts for register/login/logout/current-user/profile/admin after D-03 is finalized, then use those contracts for implementation and tests.
 
 ### Data Model
 
@@ -157,21 +157,21 @@ Existing fictional records have no owner. Before the authentication migration, t
 
 ## Tasks and Assignments
 
-Use **Not started → In progress → In review → Done**. Use **Blocked** with a reason and the person needed to help. Tasks, names, and deadlines await member confirmation.
+Use **Not started → In progress → In review → Done**. Use **Blocked** with a reason and the person needed to help. Names are synchronized with the main specification. Owners acknowledge their tasks and reviewers confirm availability in the issue; deadlines remain to be filled.
 
-| Task | Deliverable | Proposed owner / reviewer | Dependencies | Due | Status | Issue or PR |
+| Task | Deliverable | Assigned owner / reviewer | Dependencies | Due | Status | Issue or PR |
 | --- | --- | --- | --- | --- | --- | --- |
-| S1-01 | Finalize criteria, limits, and D-01/D-02/D-07 | A / E | Team meeting | To be filled | Not started | Not created |
-| S1-02 | Figma auth/profile/dashboard/admin and error states | C / A | Relevant parts of S1-01 | To be filled | Not started | Not created |
-| S1-03 | User/profile/session/measurement ERD and migration | B / D | D-03, profile design | To be filled | Not started | Not created |
-| S1-04 | Register/login/logout/current-user contracts and backend | B / D | D-03, S1-03 | To be filled | Not started | Not created |
-| S1-05 | Authentication and profile interface | C + A / E | S1-04 contract, S1-02 | To be filled | Not started | Not created |
-| S1-06 | Ownership filtering for measurements and cross-account tests | B + D / A | S1-03, S1-04 | To be filled | Not started | Not created |
-| S1-07 | Sourced TDEE equation, independent examples, and unit tests | A / E | D-02 | To be filled | Not started | Not created |
-| S1-08 | BMI/TDEE dashboard and history chart | C / F | S1-06, S1-07 | To be filled | Not started | Not created |
-| S1-09 | Admin lock/unlock and locked-user session tests | B + C / D | S1-04 | To be filled | Not started | Not created |
-| S1-10 | Second-machine setup, browser testing, and staging | F / C | D-06, integrated flow | To be filled | Not started | Not created |
-| S1-11 | Sprint 1 review, feedback, and improvements | A + F / whole team | Acceptance results | To be filled | Not started | Not created |
+| S1-01 | Finalize criteria, limits, and D-01/D-02/D-07 | Tá Anh / Thắng | Team meeting | To be filled | Not started | Not created |
+| S1-02 | Figma auth/profile/dashboard/admin and error states | Bảo / Tá Anh | Relevant parts of S1-01 | To be filled | Not started | Not created |
+| S1-03 | User/profile/session/measurement ERD and migration | Tuấn Anh / Đạt | D-03, profile design | To be filled | Not started | Not created |
+| S1-04 | Register/login/logout/current-user contracts and backend | Tuấn Anh / Đạt | D-03, S1-03 | To be filled | Not started | Not created |
+| S1-05 | Authentication and profile interface | Bảo + Tá Anh / Thắng | S1-04 contract, S1-02 | To be filled | Not started | Not created |
+| S1-06 | Ownership filtering for measurements and cross-account tests | Tuấn Anh + Đạt / Tá Anh | S1-03, S1-04 | To be filled | Not started | Not created |
+| S1-07 | Sourced TDEE equation, independent examples, and unit tests | Tá Anh / Thắng | D-02 | To be filled | Not started | Not created |
+| S1-08 | BMI/TDEE dashboard and history chart | Bảo / Hưng | S1-06, S1-07 | To be filled | Not started | Not created |
+| S1-09 | Admin lock/unlock and locked-user session tests | Tuấn Anh + Bảo / Đạt | S1-04 | To be filled | Not started | Not created |
+| S1-10 | Second-machine setup, browser testing, and staging | Hưng / Bảo | D-06, integrated flow | To be filled | Not started | Not created |
+| S1-11 | Sprint 1 review, feedback, and improvements | Tá Anh + Hưng / whole team | Acceptance results | To be filled | Not started | Not created |
 
 Owners can split large tasks into smaller issues linked to the original task/story. Record contributions so the team can identify who analyzed, implemented, tested, and reviewed each part.
 
@@ -255,3 +255,4 @@ Blockers and next steps: [if any]
 | 0.1 | 19 November 2026 | Initial stories, criteria, and tasks in PROJECT_SPEC.md, baseline a2e3eea | Prepared with AI, awaiting team confirmation |
 | 0.2 | 19 November 2026 | Split Sprint 1, retaining stories/criteria/tasks/evidence and adding the review checklist | Prepared with AI, awaiting team confirmation |
 | 0.3 | 19 November 2026 | Translate into English and update navigation links | Awaiting team review |
+| 0.4 | 20 November 2026 | Synchronize named owners and reviewers with the main specification roster | Names supplied by the user; task acknowledgements and reviews pending |
