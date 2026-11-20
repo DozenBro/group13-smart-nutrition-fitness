@@ -112,6 +112,8 @@ Use **Not started → In progress → In review → Done**. When using **Blocked
 
 ## Member and AI Workflow
 
+Follow the [Git workflow guide](GIT_WORKFLOW.md) for commands, pull requests, review, merging, and conflict handling.
+
 1. Take a task with an owner, reviewer, and expected outcome. Create or link its issue.
 2. Read the main specification, sprint specification, acceptance criteria, and relevant decisions. Gather the necessary code and files.
 3. Work on a task branch. Record assumptions and questions as they arise.

@@ -163,6 +163,7 @@ The [Build and test](https://github.com/DozenBro/group13-smart-nutrition-fitness
 ├── tests/                   # Backend tests
 ├── docs/
 │   ├── PROJECT_SPEC.md      # Shared scope, architecture, and workflow
+│   ├── GIT_WORKFLOW.md      # Team Git commands, PRs, review, and merging
 │   └── sprints/
 │       ├── SPRINT_1.md      # Health tracking and accounts
 │       ├── SPRINT_2.md      # Workouts and streaks
@@ -175,6 +176,8 @@ The [Build and test](https://github.com/DozenBro/group13-smart-nutrition-fitness
 ```
 
 ## Contributing
+
+Follow the [Git workflow guide](docs/GIT_WORKFLOW.md) for setup, branch commands, commits, pull requests, review, and conflict handling.
 
 1. Take a task and agree on acceptance criteria in its issue.
 2. Create a task branch, such as `feature/S1-06-measurement-owner`.
