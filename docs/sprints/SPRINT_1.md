@@ -1,6 +1,6 @@
 # Sprint 1 Foundation and Health Tracking
 
-**Draft 0.4 · 20 November 2026 · Partially implemented**
+**Draft 0.5 · 21 November 2026 · Partially implemented**
 
 Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code baseline is `7e0f064`. Names follow the main specification roster. Start/review dates and task acknowledgements remain pending. Scope follows WBS 1.1–1.9 in the group plan.
 
@@ -9,6 +9,8 @@ Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code
 **Acceptance flow** — A Member registers, logs in, updates their profile, saves their own measurements, and views BMI/TDEE, history, and charts. An Admin lists, locks, and unlocks accounts.
 
 **Available** — Shared measurement/BMI demo, PostgreSQL and migrations, input validation, 12 test cases, and successful CI. **Pending** — Accounts, ownership, profiles/TDEE, charts, administration, and team acceptance.
+
+**S1-07 proposal on `feature/S1-07-tdee-handover`** — A standalone TDEE helper, 47 calculation tests, and a [worked handover for Tuấn Anh and Thắng](../handover/S1-07_HEALTH_HANDOVER.md) are available for review. The complete local suite now has 59 cases. D-02 approval, profile/API/UI integration, and US-H04 acceptance remain pending. The 12-case count above describes the original measurement baseline.
 
 **Implementation order** — Finalize D-03, design authentication and its migrations, implement register/login/logout, protect measurement ownership, add profiles/TDEE, add charts and administration, then perform integration testing and review. Interface design and formula research can proceed in parallel.
 
@@ -75,6 +77,8 @@ Read the [main specification](../PROJECT_SPEC.md) before taking a task. The code
 ### US-H04 View TDEE
 
 **As a Member, I want to view estimated daily energy expenditure from my profile and measurements so that later planning features can use it.** Owner Tá Anh, collaborating with Tuấn Anh/Bảo, reviewer Thắng. Status Awaiting D-02. WBS 1.7.
+
+The [S1-07 handover](../handover/S1-07_HEALTH_HANDOVER.md) proposes the equation, inputs, activity mapping, examples, and Python contract. This implements a calculation helper; it does not yet provide the Member-facing story or record human approval of D-02.
 
 - **AC1** The team documents the equation, source, inputs, activity factors, applicable population, and rounding.
 - **AC2** Unit tests verify at least two independently calculated examples before integration.
@@ -167,7 +171,7 @@ Use **Not started → In progress → In review → Done**. Use **Blocked** with
 | S1-04 | Register/login/logout/current-user contracts and backend | Tuấn Anh / Đạt | D-03, S1-03 | To be filled | Not started | Not created |
 | S1-05 | Authentication and profile interface | Bảo + Tá Anh / Thắng | S1-04 contract, S1-02 | To be filled | Not started | Not created |
 | S1-06 | Ownership filtering for measurements and cross-account tests | Tuấn Anh + Đạt / Tá Anh | S1-03, S1-04 | To be filled | Not started | Not created |
-| S1-07 | Sourced TDEE equation, independent examples, and unit tests | Tá Anh / Thắng | D-02 | To be filled | Not started | Not created |
+| S1-07 | Sourced TDEE equation, independent examples, and unit tests | Tá Anh / Thắng | D-02 | To be filled | In progress; proposed helper tested, review pending | [Issue #1](https://github.com/DozenBro/group13-smart-nutrition-fitness/issues/1); branch `feature/S1-07-tdee-handover`; PR pending |
 | S1-08 | BMI/TDEE dashboard and history chart | Bảo / Hưng | S1-06, S1-07 | To be filled | Not started | Not created |
 | S1-09 | Admin lock/unlock and locked-user session tests | Tuấn Anh + Bảo / Đạt | S1-04 | To be filled | Not started | Not created |
 | S1-10 | Second-machine setup, browser testing, and staging | Hưng / Bảo | D-06, integrated flow | To be filled | Not started | Not created |
@@ -186,7 +190,7 @@ Owners can split large tasks into smaller issues linked to the original task/sto
 | US-H03 | `test_bmi_known_example`, `test_save_then_read` | Member-owned flow and agreed boundary cases |
 | US-H05 | `test_newest_first_and_limit` | Ownership filtering, charts, and error/empty/loading states |
 | US-A01, US-A02 | None yet | Duplicate email, invalid login, logout, expiry, and Admin permissions |
-| US-H01, US-H04 | None yet | Valid/invalid profiles, cross-account access, and independent TDEE examples |
+| US-H01, US-H04 | `tests/test_health.py`: independent TDEE fixtures, five factors, rounding, invalid inputs, and proposed age bounds | Human review of D-02/examples, profile/API integration, and cross-account access |
 | US-AD01 | None yet | Member denial, old-session locking, unlocking, and data preservation |
 | CI | EV-01 | Successful CI for the demonstrated commit |
 
@@ -248,6 +252,20 @@ Blockers and next steps: [if any]
 | --- | --- | --- | --- | --- | --- |
 | No confirmed member entry yet | To be filled | To be filled | To be filled | To be filled | Awaiting entry |
 
+### S1-LOG-001: AI-Assisted S1-07 Handover Example
+
+- Date: 21 November 2026, Asia/Bangkok.
+- Requested by: the user, for the health-module handover. Planned owner/reviewer remain Tá Anh/Thắng; neither person's independent execution or approval is claimed.
+- Starting commit: `235be59`; branch: `feature/S1-07-tdee-handover`.
+- Goal: create a sourced formula proposal, a pure TDEE helper, numerical/invalid-input tests, and a PR for integration review.
+- AI assistance: source lookup, documentation, implementation, tests, and Git/PR preparation. The exact model identifier was not recorded.
+- Verification: initial 9 calculation tests failed because the helper was absent, then passed after the calculation was added. A second run exposed 36 validation failures before input validation was implemented.
+- Final local result: `python -m pytest -q tests/test_health.py` via the project venv: 47 passed. `python manage.py test` via the project venv and isolated `fitness_test`: 59 passed, with one pre-existing Starlette/httpx deprecation warning.
+- Environment note: sandbox loopback access was denied; the authorized full test command succeeded outside that restriction.
+- Remaining work: human arithmetic/rule review, D-02 decision, profile/schema/API/UI integration, permission tests, and Member-facing acceptance. Review conclusions and PR evidence will be linked after creation.
+- Independent AI code review: the reviewer reran all 47 calculation cases and found no critical, important, or minor code findings. This is separate from the pending team review of D-02 and integration.
+- Task tracking: [S1-07 issue #1](https://github.com/DozenBro/group13-smart-nutrition-fitness/issues/1).
+
 ## Revision History
 
 | Version | Date | Change | Confirmation |
@@ -256,3 +274,4 @@ Blockers and next steps: [if any]
 | 0.2 | 19 November 2026 | Split Sprint 1, retaining stories/criteria/tasks/evidence and adding the review checklist | Prepared with AI, awaiting team confirmation |
 | 0.3 | 19 November 2026 | Translate into English and update navigation links | Awaiting team review |
 | 0.4 | 20 November 2026 | Synchronize named owners and reviewers with the main specification roster | Names supplied by the user; task acknowledgements and reviews pending |
+| 0.5 | 21 November 2026 | Add S1-07 formula proposal, handover, pure calculation evidence, and AI work log | Human review, D-02 approval, and integration pending |
