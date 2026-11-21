@@ -9,12 +9,12 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from .database import get_session
 from .health import calculate_bmi
-from .models import Measurement
+from .models import Food, Measurement
 
 
 app = FastAPI(title='Group 13 · Measurement demo', version='0.1.0')
@@ -44,6 +44,58 @@ def measurement_output(row: Measurement) -> MeasurementOutput:
         created_at=row.created_at,
     )
 
+# Schema & Mapper
+class FoodInput(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    name: str = Field(min_length=1, max_length=150)
+    portion_desc: str = Field(min_length=1, max_length=100)
+    calories: Decimal = Field(ge=0, max_digits=7, decimal_places=2)
+    protein_g: Decimal = Field(ge=0, max_digits=6, decimal_places=2)
+    carbs_g: Decimal = Field(ge=0, max_digits=6, decimal_places=2)
+    fat_g: Decimal = Field(ge=0, max_digits=6, decimal_places=2)
+    price_vnd: int = Field(ge=0)
+    meal_slot: str = Field(min_length=1, max_length=50)
+    preference_tags: str | None = Field(default=None, max_length=500)
+    nutrition_source: str = Field(min_length=1, max_length=255)
+    price_source: str = Field(min_length=1, max_length=255)
+
+
+class FoodOutput(BaseModel):
+    id: int
+    name: str
+    portion_desc: str
+    calories: float
+    protein_g: float
+    carbs_g: float
+    fat_g: float
+    price_vnd: int
+    meal_slot: str
+    preference_tags: str | None
+    nutrition_source: str
+    price_source: str
+    is_active: bool
+    created_at: datetime
+
+
+def food_output(row: Food) -> FoodOutput:
+    return FoodOutput(
+        id=row.id,
+        name=row.name,
+        portion_desc=row.portion_desc,
+        calories=float(row.calories),
+        protein_g=float(row.protein_g),
+        carbs_g=float(row.carbs_g),
+        fat_g=float(row.fat_g),
+        price_vnd=row.price_vnd,
+        meal_slot=row.meal_slot,
+        preference_tags=row.preference_tags,
+        nutrition_source=row.nutrition_source,
+        price_source=row.price_source,
+        is_active=row.is_active,
+        created_at=row.created_at,
+    )
+
+
 
 @app.exception_handler(SQLAlchemyError)
 async def database_error(request, error):
@@ -71,6 +123,46 @@ def create_measurement(data: MeasurementInput, session: SessionDependency):
     session.commit()
     session.refresh(row)
     return measurement_output(row)
+
+@app.get('/api/foods', response_model=list[FoodOutput])
+def list_foods(
+    session: SessionDependency,
+    meal_slot: Annotated[str | None, Query(max_length=50)] = None,
+    max_price_vnd: Annotated[int | None, Query(ge=0)] = None,
+    tag: Annotated[str | None, Query(max_length=50)] = None,
+    limit: Annotated[int, Query(ge=1, le=200)] = 100,
+):
+    query = select(Food).where(Food.is_active.is_(True))
+    if meal_slot:
+        query = query.where(Food.meal_slot.ilike(f'%{meal_slot.strip()}%'))
+    if max_price_vnd is not None:
+        query = query.where(Food.price_vnd <= max_price_vnd)
+    if tag:
+        query = query.where(Food.preference_tags.ilike(f'%{tag.strip()}%'))
+    query = query.order_by(Food.name.asc(), Food.id.asc()).limit(limit)
+    return [food_output(row) for row in session.scalars(query)]
+
+
+@app.post('/api/foods', response_model=FoodOutput, status_code=201)
+def create_food(data: FoodInput, session: SessionDependency):
+    row = Food(**data.model_dump())
+    session.add(row)
+    try:
+        session.commit()
+    except IntegrityError:
+        session.rollback()
+        raise HTTPException(status_code=409, detail='A food item with this name already exists.')
+    session.refresh(row)
+    return food_output(row)
+
+
+@app.delete('/api/foods/{food_id}', status_code=204)
+def deactivate_food(food_id: int, session: SessionDependency):
+    row = session.get(Food, food_id)
+    if not row or not row.is_active:
+        raise HTTPException(status_code=404, detail='Food item not found.')
+    row.is_active = False
+    session.commit()
 
 
 dist = Path(__file__).resolve().parents[1] / 'frontend' / 'dist'
