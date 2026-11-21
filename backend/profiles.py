@@ -3,7 +3,7 @@ from sqlalchemy import select
 
 from .dependencies import CurrentUserDependency, SessionDependency
 from .models import Profile
-from .schemas import ProfileInput, ProfileOutput
+from .auth_schemas import ProfileInput, ProfileOutput
 
 router = APIRouter(prefix='/api/profile', tags=['profile'])
 

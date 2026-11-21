@@ -13,7 +13,7 @@ from .dependencies import (
     hash_token,
 )
 from .models import Session as AuthSession, User
-from .schemas import (
+from .auth_schemas import (
     LoginInput,
     RegisterInput,
     TokenResponse,
