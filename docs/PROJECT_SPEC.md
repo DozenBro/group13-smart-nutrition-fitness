@@ -1,6 +1,6 @@
 # Group 13 Project Specification
 
-**Smart Nutrition and Fitness System · Draft 0.4 · 20 November 2026**
+**Smart Nutrition and Fitness System · Draft 0.5 · 21 November 2026**
 
 This document defines the shared scope, architecture, roles, and workflow. Each sprint document contains its stories, acceptance criteria, API/schema changes, tasks, tests, and work log. Member names follow the roster below. Task acknowledgements, reviewer availability, and deadlines still need to be recorded in the relevant issues.
 
@@ -86,7 +86,7 @@ The code baseline `7e0f064` contains a shared measurement/BMI demo and 12 test c
 | ID | Question or proposal | Owner | Status | Decision and date |
 | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | ---------------------------------------- | ----------------- |
 | D-01 | Confirm Sprint 1 scope and review date with the instructor | Tá Anh | Awaiting confirmation | To be filled |
-| D-02 | Select the TDEE equation, source, and activity factors. The plan suggests Mifflin–St Jeor. | Tá Anh | Awaiting source review and team decision | To be filled |
+| D-02 | Select the TDEE equation, source, and activity factors. Review the [S1-07 proposal and integration handover](handover/S1-07_HEALTH_HANDOVER.md). | Tá Anh | Sourced implementation proposed; team decision pending | No approval recorded; review equation, activity codes, age scope, and input rules |
 | D-03 | Define valid emails/passwords, hashing library, session lifetime, cookies/CSRF, and initial Admin provisioning. The tool checklist proposes server sessions. | Tuấn Anh | Awaiting design | To be filled |
 | D-04 | Are challenges required? The project description and CSV differ. | Tá Anh | Awaiting instructor clarification | To be filled |
 | D-05 | Agree on the display timezone and which saved data can be edited | Tá Anh + Bảo | Awaiting team decision | To be filled |
@@ -166,5 +166,6 @@ When switching AI tools or handing work to another person, provide the commit, t
 | 0.2     | 19 November 2026 | Split the main and three sprint specifications, retaining Sprint 1 IDs and evidence | Draft awaiting team confirmation |
 | 0.3     | 19 November 2026 | Translate repository documentation into English and update navigation links         | Translation awaiting team review |
 | 0.4 | 20 November 2026 | Synchronize the roster across sprint assignments and planning artifacts | Names supplied by the user; task acknowledgements and reviews pending |
+| 0.5 | 21 November 2026 | Link the sourced S1-07 TDEE proposal and integration handover | D-02 awaits team review; API/UI integration pending |
 
 References include `Project Description.docx`, the Group 13 Agile workbook (`Sprint_Agile_Group13 1.xlsx`, converted from the original CSV), the project execution guide, the tool checklist, and repository code. Sprints 2 and 3 expand their corresponding WBS entries as proposals. The team confirms new algorithms, limits, and dates in the decision tables.
