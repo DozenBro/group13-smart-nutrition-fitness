@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 
 from .database import get_session
 from .health import calculate_bmi
-from .models import Food, Measurement
+from .models import Food, Measurement, User
 
 
 app = FastAPI(title='Group 13 · Measurement demo', version='0.1.0')
@@ -118,7 +118,16 @@ def list_measurements(
 
 @app.post('/api/measurements', response_model=MeasurementOutput, status_code=201)
 def create_measurement(data: MeasurementInput, session: SessionDependency):
-    row = Measurement(weight_kg=data.weight_kg, height_cm=data.height_cm)
+    # S1-03 bridge: until S1-06 wires authenticated identity, attribute
+    # new measurements to the Demo User created by the migration.
+    demo_user = session.scalar(select(User).where(User.email == 'demo@example.com'))
+    if demo_user is None:
+        raise HTTPException(500, 'Demo user missing; migration may not have run.')
+    row = Measurement(
+        weight_kg=data.weight_kg,
+        height_cm=data.height_cm,
+        user_id=demo_user.id,
+    )
     session.add(row)
     session.commit()
     session.refresh(row)
