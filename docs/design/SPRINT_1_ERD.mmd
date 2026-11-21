@@ -1,0 +1,42 @@
+erDiagram
+    direction LR
+
+    users ||--o| profiles : has
+    users ||..o{ sessions : authenticates
+    users ||..o{ measurements : owns
+
+    users {
+        integer id PK "NN; auto-generated"
+        text email UK "NN; normalized lower trim"
+        text password_hash "NN; never plaintext"
+        text role "NN; default member; member or admin"
+        boolean is_locked "NN; default false"
+        timestamptz created_at "NN; default now"
+        timestamptz updated_at "NN; maintained on update"
+    }
+
+    profiles {
+        integer user_id PK, FK "NN; references users.id"
+        smallint age_years "NULL allowed; proposed 19 to 78"
+        text sex_for_equation "NULL allowed; male or female"
+        text activity_level "NULL allowed; reviewed code list"
+        timestamptz created_at "NN; default now"
+        timestamptz updated_at "NN; maintained on update"
+    }
+
+    sessions {
+        integer id PK "NN; auto-generated"
+        integer user_id FK "NN; references users.id"
+        text token_hash UK "NN; opaque token digest only"
+        timestamptz created_at "NN; default now"
+        timestamptz expires_at "NN; after created_at"
+        timestamptz revoked_at "NULL means not revoked"
+    }
+
+    measurements {
+        integer id PK "NN; preserve existing IDs"
+        integer user_id FK "NEW; target NN; users.id"
+        numeric weight_kg "NN; NUMERIC(5,2); greater than 0 up to 500"
+        numeric height_cm "NN; NUMERIC(5,2); 50 to 250"
+        timestamptz created_at "NN; server default now"
+    }

@@ -181,6 +181,8 @@ Existing fictional records have no owner. Before the authentication migration, t
 
 **Tuấn Anh prepares; Đạt reviews; Tá Anh and Bảo confirm the fields needed by calculations and screens.** Existing SQLAlchemy connection/model code and the initial measurement migration are starting points to extend.
 
+**Design proposal available:** [Detailed ERD, Figma link, constraints, and migration handoff](../design/SPRINT_1_ERD.md). This proposal awaits team review and does not complete the implementation checklist below.
+
 - [ ] Produce `docs/design/SPRINT_1_ERD.md` with a readable ERD, primary/foreign keys, nullability, uniqueness, and relationship cardinalities.
 - [ ] Detail `users`: identifier, normalized unique email, password hash, Member/Admin role, and locked status. Confirm email normalization and Admin creation in D-03 before freezing constraints.
 - [ ] Detail `profiles`: a user relationship allowing at most one profile per account, calculation inputs following D-02, and the agreed incomplete-profile behavior. Do not guess age storage, supported values, or historical calculation policy.
@@ -426,6 +428,14 @@ Blockers and next steps: [if any]
 - Clarified backend profile ownership under Tuấn Anh's S1-04 and the S1-05 interface/health support split. Task/story IDs and acceptance criteria remain unchanged.
 - Repository baseline: `a5de397`; documentation branch `docs/S1-action-checklists`. No implementation or schema changes are included in this clarification.
 - Verification: task/role/dependency consistency, preserved story criteria, local links, and document structure are checked before committing. Human task acknowledgements, dates, decisions, implementation, and acceptance remain pending where not separately evidenced.
+
+### S1-LOG-003: Detailed Database Design Proposal
+
+- Date: 21 November 2026, Asia/Bangkok. Requested by the user to prepare an ERD for later team review.
+- AI assistance: prepared the editable Figma ERD, matching Mermaid source, and data dictionary for proposed users, profiles, sessions, and measurement ownership.
+- Handover: [Sprint 1 detailed ERD](../design/SPRINT_1_ERD.md), including constraints, indexes, pending D-02/D-03/D-05 decisions, and the ownerless-record conversion checklist. Tuấn Anh implements; Đạt reviews; Tá Anh/Bảo confirm health and interface inputs.
+- Repository baseline: `f491a31`; documentation branch `docs/S1-03-detailed-erd`. This handoff contains no application, migration, or live database changes. S1-03 implementation and human approval remain pending.
+- Verification: the embedded Mermaid matches its source; four entities, three relationships, and 14 local links were checked. Independent AI review identified missing lock/logout revocation wording, which was clarified so unlocking cannot restore old sessions. This review does not establish human acceptance.
 
 ## Revision History
 
