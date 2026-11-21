@@ -171,7 +171,7 @@ Use **Not started → In progress → In review → Done**. Use **Blocked** with
 | S1-04 | Register/login/logout/current-user contracts and backend | Tuấn Anh / Đạt | D-03, S1-03 | To be filled | Not started | Not created |
 | S1-05 | Authentication and profile interface | Bảo + Tá Anh / Thắng | S1-04 contract, S1-02 | To be filled | Not started | Not created |
 | S1-06 | Ownership filtering for measurements and cross-account tests | Tuấn Anh + Đạt / Tá Anh | S1-03, S1-04 | To be filled | Not started | Not created |
-| S1-07 | Sourced TDEE equation, independent examples, and unit tests | Tá Anh / Thắng | D-02 | To be filled | In progress; proposed helper tested, review pending | [Issue #1](https://github.com/DozenBro/group13-smart-nutrition-fitness/issues/1); branch `feature/S1-07-tdee-handover`; PR pending |
+| S1-07 | Sourced TDEE equation, independent examples, and unit tests | Tá Anh / Thắng | D-02 | To be filled | In review; D-02 and human verification pending | [Issue #1](https://github.com/DozenBro/group13-smart-nutrition-fitness/issues/1), [PR #2](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/2) |
 | S1-08 | BMI/TDEE dashboard and history chart | Bảo / Hưng | S1-06, S1-07 | To be filled | Not started | Not created |
 | S1-09 | Admin lock/unlock and locked-user session tests | Tuấn Anh + Bảo / Đạt | S1-04 | To be filled | Not started | Not created |
 | S1-10 | Second-machine setup, browser testing, and staging | Hưng / Bảo | D-06, integrated flow | To be filled | Not started | Not created |
@@ -262,9 +262,10 @@ Blockers and next steps: [if any]
 - Verification: initial 9 calculation tests failed because the helper was absent, then passed after the calculation was added. A second run exposed 36 validation failures before input validation was implemented.
 - Final local result: `python -m pytest -q tests/test_health.py` via the project venv: 47 passed. `python manage.py test` via the project venv and isolated `fitness_test`: 59 passed, with one pre-existing Starlette/httpx deprecation warning.
 - Environment note: sandbox loopback access was denied; the authorized full test command succeeded outside that restriction.
-- Remaining work: human arithmetic/rule review, D-02 decision, profile/schema/API/UI integration, permission tests, and Member-facing acceptance. Review conclusions and PR evidence will be linked after creation.
+- Remaining work: human arithmetic/rule review, D-02 decision, profile/schema/API/UI integration, permission tests, and Member-facing acceptance.
 - Independent AI code review: the reviewer reran all 47 calculation cases and found no critical, important, or minor code findings. This is separate from the pending team review of D-02 and integration.
 - Task tracking: [S1-07 issue #1](https://github.com/DozenBro/group13-smart-nutrition-fitness/issues/1).
+- Handover: [PR #2](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/2), first implementation commit `31ad446`. Open for review; not merged. Tuấn Anh/Thắng have not yet supplied review conclusions.
 
 ## Revision History
 

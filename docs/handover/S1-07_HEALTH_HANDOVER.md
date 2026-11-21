@@ -2,6 +2,8 @@
 
 **21 November 2026 · Proposal for D-02 · Awaiting team review**
 
+Tracking: [task issue #1](https://github.com/DozenBro/group13-smart-nutrition-fitness/issues/1) · [review PR #2](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/2).
+
 Prepared with AI assistance at the user's request for Tá Anh's health-module handover. Tuấn Anh reviews the integration contract; Thắng reviews the arithmetic and tests. This records a proposed implementation, not either member's approval or a completed user story.
 
 ## Start Here

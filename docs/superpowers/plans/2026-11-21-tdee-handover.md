@@ -37,8 +37,8 @@
 - [x] Add invalid-input tests: missing values, measurement boundaries/precision/types/non-finite values, age bounds/fraction/bool, unsupported codes, and non-positive REE. Observe these fail before adding validation.
 - [x] Implement field validation, run calculation tests, then the complete suite. Expected: all pass; report the pre-existing Starlette/httpx deprecation warning.
 - [x] Link the handover from shared D-02 and Sprint 1; keep approval and full US-H04 integration pending. Record actual AI assistance and verification in the sprint log.
-- [ ] Review all changes, commit, push the task branch, and open a PR with source links, verification, integration instructions, and the human review checklist.
-- [ ] Confirm the remote PR head and report its URL. Do not merge the PR or claim human acceptance.
+- [x] Review all changes, commit, push the task branch, and open a PR with source links, verification, integration instructions, and the human review checklist.
+- [x] Confirm the remote PR head and report its URL. Do not merge the PR or claim human acceptance.
 
 ## Execution Record
 
@@ -48,3 +48,4 @@
 - Verification: first 9 numeric cases RED then GREEN; validation cycle 36 RED then GREEN. Final calculation suite 47 passed; complete isolated-database suite 59 passed with the existing Starlette/httpx warning.
 - Independent AI code review: no critical, important, or minor findings; 47 cases rerun by the reviewer. Clinical/product approval, authenticated integration, and remote PR verification remain outside that code-review conclusion.
 - Task issue: https://github.com/DozenBro/group13-smart-nutrition-fitness/issues/1.
+- Pull request: https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/2. Verified open and unmerged; initial remote head `31ad446e6857c117838d66cda935ebbcf9096b2a`. This follow-up records the review links on the same branch.
