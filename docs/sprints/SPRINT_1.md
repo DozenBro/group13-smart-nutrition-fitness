@@ -204,7 +204,7 @@ Use **Not started → In progress → In review → Done**. Use **Blocked** with
 | --- | --- | --- | --- | --- | --- | --- |
 | S1-01 | Finalize criteria, limits, and D-01/D-02/D-07 | Tá Anh / Thắng | Team meeting | To be filled | Not started | Not created |
 | S1-02 | Figma auth/profile/dashboard/admin and error states | Bảo / Tá Anh | Relevant parts of S1-01 | To be filled | Not started | Not created |
-| S1-03 | User/profile/session/measurement ERD and migration | Tuấn Anh / Đạt | D-03, profile design | To be filled | Not started | Not created |
++| S1-03 | User/profile/session/measurement ERD and migration | Tuấn Anh / Đạt | D-03, profile design | To be filled | In review | [PR #7](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/7) |
 | S1-04 | Registration/login/logout/current-user/profile contracts and backend | Tuấn Anh / Đạt | D-03, S1-03; D-02 for profile fields | To be filled | Not started | Not created |
 | S1-05 | Authentication and profile interface | Bảo + Tá Anh / Thắng | S1-04 contract, S1-02 | To be filled | Not started | Not created |
 | S1-06 | Ownership filtering for measurements and cross-account tests | Tuấn Anh + Đạt / Tá Anh | S1-03, S1-04 | To be filled | Not started | Not created |
@@ -376,7 +376,7 @@ Apply the [shared Definition of Done](../PROJECT_SPEC.md#definition-of-done). St
 | EV-02 | 19 November 2026 | Initial measurement/BMI code created with AI assistance at the user's request | Commit `cb29921`, backend/frontend/test/migration files in the repository | Team attribution to A–F is pending |
 
 Earlier verification recorded 12 passing PostgreSQL tests and browser checks for saving, refresh, invalid input, and a narrow screen. Members should rerun the checks on their machines and record their names and results when accepting the handover.
-
+| EV-03 | 21 November 2026 | Auth migration applied cleanly and full suite passed on `S1-03-accounts-migration` | Local: `manage.py test` → 64 passed; `alembic heads` → one head. PR: [PR #N](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/7) | Local run only; CI evidence pending until PR merges. Đạt's S1-03 review pending |
 ### Member and AI Activity Log
 
 Add an entry for each session producing a handover result, such as a rule decision, code change, test run, or review. Link longer records in issues/PRs. No session has yet been confirmed under the name of a member A–F.
@@ -437,6 +437,15 @@ Blockers and next steps: [if any]
 - Repository baseline: `f491a31`; documentation branch `docs/S1-03-detailed-erd`. This handoff contains no application, migration, or live database changes. S1-03 implementation and human approval remain pending.
 - Verification: the embedded Mermaid matches its source; four entities, three relationships, and 14 local links were checked. Independent AI review identified missing lock/logout revocation wording, which was clarified so unlocking cannot restore old sessions. This review does not establish human acceptance.
 
+### S1-LOG-004: Auth Migration Schema Alignment
+
+- Date: 21 November 2026, Asia/Ho_Chi_Minh.
+- AI assistance: aligned the auth migration with `SPRINT_1_ERD.md`; implemented `backend/auth_utils.py`; added a working `create-admin` action and cross-platform PostgreSQL support to `manage.py`.
+- Changed files: `migrations/versions/002_auth_and_ownership.py`, `backend/models.py`, `backend/main.py`, `backend/auth_utils.py`, `manage.py`, `requirements.txt`, `README.md`, `.gitignore`.
+- Repository baseline: `a5de397`; branch `S1-03-accounts-migration`. This PR supplies the schema foundation for US-H02, US-A02, and US-AD01 but does not implement their behavior; endpoints, ownership filtering, and admin UI remain Sprint 1 tasks.
+- Verification:  `manage.py migrate` → clean on fresh databases; `manage.py create-admin` → works and is idempotent; `manage.py test` → 64 passed. SQLAlchemy reflection on `fitness_demo` and `fitness_test` confirms the schema matches `backend/models.py`. Downgrade round-trip not executed; the `downgrade()` body was reviewed but not run.
+- Handover: [PR #7](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/7). Đạt reviews; D-03 remains partially open for email normalization, session lifetime, CSRF, and admin provisioning. No human approval has been recorded or inferred.
+
 ## Revision History
 
 | Version | Date | Change | Confirmation |
@@ -447,3 +456,4 @@ Blockers and next steps: [if any]
 | 0.4 | 20 November 2026 | Synchronize named owners and reviewers with the main specification roster | Names supplied by the user; task acknowledgements and reviews pending |
 | 0.5 | 21 November 2026 | Add S1-07 formula proposal, handover, pure calculation evidence, and AI work log | Human review, D-02 approval, and integration pending |
 | 0.6 | 21 November 2026 | Add member starting actions, explicit database handoff, and implementation/verification checklists for all 11 tasks; record PR #2 merge | Task acknowledgements and human decisions still require evidence |
+| 0.7 | 21 November 2026 | Record S1-03 auth migration implementation, fork fix, create-admin, and 64-test evidence; S1-03 status → In review | Tuấn Anh's session; Đạt review and D-03 outcomes pending |
