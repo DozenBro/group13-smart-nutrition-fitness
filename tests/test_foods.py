@@ -5,7 +5,7 @@ from sqlalchemy import delete
 from backend.database import SessionLocal
 from backend.main import app
 from backend.models import Food
-from backend.seed_foods import SAMPLE_FOODS, seed_foods
+from backend.seed_foods import load_foods_from_csv, seed_foods
 
 
 @pytest.fixture(autouse=True)
@@ -106,8 +106,10 @@ def test_deactivate_food_hides_from_list_but_preserves_row(client):
 
 
 def test_seed_foods_is_idempotent():
+    expected_count = len(load_foods_from_csv())
     first_added = seed_foods()
     second_added = seed_foods()
 
-    assert first_added == len(SAMPLE_FOODS)
+    assert expected_count == 60
+    assert first_added == expected_count
     assert second_added == 0
