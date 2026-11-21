@@ -1,60 +1,98 @@
-# Data Sources & Collection Methodology
+# Data Sources, ETL Pipeline & Database Seeding Guide
 
-This document tracks the authoritative open datasets, reference pricing benchmarks, and standardization rules used to populate the **Foods** and **Exercises** tables in the **Smart Nutrition & Fitness** project.
+This document records the authoritative sources, data processing pipeline, and local setup instructions for the **Foods** dataset in the **Smart Nutrition & Fitness** project. It also serves as an onboarding guide for team members to seed, inspect, and test the database locally.
 
 ---
 
-## 1. Nutrition & Food Datasets
+## 1. Food & Nutrition Data Sources
 
-To ensure accurate macronutrient calculations (calories, protein, carbohydrates, and fat) for Vietnamese daily meals while maintaining clean, auditable records, data is compiled from three primary sources:
+The current dataset (`data/vietnamese_foods.csv`) combines **60 manually curated Vietnamese daily dishes** with **hundreds of filtered whole foods and basic ingredients** extracted from the USDA database (~700+ total food items).
 
-| Source | Type | URL / Endpoint | Data Extracted | Usage in Project |
-| :--- | :--- | :--- | :--- | :--- |
-| **Vietnam National Institute of Nutrition (NIN)** | Official Food Composition Table | `https://viendinhduong.vn` | Calories (`kcal`), Protein (`g`), Glucid/Carbs (`g`), Lipid/Fat (`g`) per 100g of traditional Vietnamese ingredients and cooked dishes. | Primary reference for cooked Vietnamese staples (e.g., *Phở*, *Bún chả*, *Cơm tấm*, stir-fried vegetables, tofu). |
-| **Open Food Facts (Vietnam)** | Open REST API & Crowd-sourced DB | `https://world.openfoodfacts.org/api/v2/search?countries_tags_en=vietnam` | Product names, serving sizes, and macro values per 100g (`energy-kcal_100g`, `proteins_100g`, `carbohydrates_100g`, `fat_100g`). | Used via automated Python scripts to collect packaged supermarket foods, dairy, yogurt, and snacks available in Vietnam. |
-| **USDA FoodData Central** | Open Government Dataset (CSV/JSON/API) | `https://fdc.nal.usda.gov` | Standardized raw ingredient nutrition profiles per 100g. | Secondary verification for fitness-focused whole foods (e.g., chicken breast, eggs, sweet potatoes, oats, bananas). |
+| Source | Type | URL / Reference | Scope & Usage in Project |
+| :--- | :--- | :--- | :--- |
+| **Vietnam National Institute of Nutrition (NIN)** | Official Food Composition Table | `https://viendinhduong.vn` | Reference values (`kcal`, `protein_g`, `carbs_g`, `fat_g`) for traditional Vietnamese cooked dishes (e.g., *Phở bò*, *Bún chả*, *Cơm tấm*, stir-fried dishes). |
+| **USDA FoodData Central (SR Legacy 2018-04)** | Open Government CSV Dataset | `https://fdc.nal.usda.gov` | Filtered raw and minimally processed ingredients (poultry, beef, pork, seafood, eggs, dairy, grains, vegetables, fruits, legumes, nuts) standardized per `100g edible portion`. |
+| **Open Food Facts (Vietnam)** | Open REST API | `https://world.openfoodfacts.org/api/v2/search?countries_tags_en=vietnam` | Secondary reference for packaged Vietnamese dairy and retail snacks. |
 
 ### Reference Pricing (`price_vnd`)
-International and academic nutrition databases do not include local Vietnamese retail prices. Reference prices in VND are estimated based on **2026 Hanoi average consumer pricing**:
-* **Street food & casual eateries:** ~20,000 – 55,000 VND per standard serving (e.g., *Bánh mì*, *Phở*, *Cơm bình dân*).
-* **Supermarket retail (WinMart / Bach Hoa Xanh):** Pro-rated by portion weight (e.g., 150g chicken breast, 2 chicken eggs, 100g rolled oats).
-* Every record explicitly logs its provenance in the `nutrition_source` and `price_source` columns.
+International nutrition datasets do not include Vietnamese currency pricing. All prices are standardized in **VND** based on **2026 Hanoi average consumer benchmarks**:
+* **Vietnamese street food & casual meals:** ~20,000 – 55,000 VND per practical serving (e.g., *1 medium bowl (~450g)*).
+* **USDA whole ingredients:** Estimated Hanoi retail price per `100g edible portion` (ranging from 8,000 VND for grains/vegetables to 30,000 VND for beef).
+* Every record tracks its exact provenance via the `nutrition_source` (including USDA `fdc_id`) and `price_source` columns.
 
 ---
 
-## 2. Exercise & Physical Activity Datasets
+## 2. ETL & Data Standardization Pipeline
 
-For workout recommendations and calorie expenditure estimation, exercises are sourced from open fitness repositories:
-
-| Source | Type | URL | Data Extracted | Usage in Project |
-| :--- | :--- | :--- | :--- | :--- |
-| **Free Exercise DB** | Open GitHub Repository (JSON) | `https://github.com/yuhonas/free-exercise-db` | 800+ exercises with `name`, `level` (beginner/intermediate/expert), `equipment`, `primaryMuscles`, `category`, and step-by-step `instructions`. | Core catalog for bodyweight, dumbbell, and gym workout routines. |
-| **Compendium of Physical Activities** | Scientific Reference Table | `https://pacompendium.com` | Metabolic Equivalent of Task (**MET**) values per activity intensity. | Used to calculate estimated calories burned: $\text{Calories} = \text{MET} \times \text{weight\_kg} \times \text{duration\_hours}$. |
-
----
-
-## 3. Data Standardization & Seeding Pipeline
-
-Instead of scraping unstructured HTML pages at runtime, all curated data is stored as version-controlled CSV files inside the `data/` directory and loaded into PostgreSQL via idempotent Python scripts.
+Instead of storing raw multi-table dumps in Git, raw datasets are processed locally and stored in a single, version-controlled UTF-8 CSV file:
 
 ```text
-Open APIs / Official Tables  ──>  data/vietnamese_foods.csv  ──>  backend/seed_foods.py  ──>  PostgreSQL (foods)
+[NIN Reference + Curated VN Dishes (60)] ──┐
+                                           ├──> data/vietnamese_foods.csv ──> backend/seed_foods.py ──> PostgreSQL (foods)
+[USDA SR Legacy CSV] ─> import_usda_foods.py ┘
 ```
 
-### CSV Schema Rules (`data/vietnamese_foods.csv`)
-1. **Encoding:** UTF-8 (to preserve Vietnamese diacritics alongside English translations, e.g., `Phở bò tái (Rare Beef Pho)`).
-2. **Portion Normalization:** All macro values and `price_vnd` must correspond to a single practical serving described in `portion_desc` (e.g., `1 medium bowl (~450g)`), rather than raw 100g values, so the meal planner can sum meals directly.
-3. **Allowed Tags:**
-   * `meal_slot`: Comma-separated subset of `breakfast`, `lunch`, `dinner`, `snack`.
-   * `preference_tags`: Comma-separated dietary tags such as `high-protein`, `low-carb`, `vegetarian`, `no-pork`, `budget`, `high-calorie`.
-4. **Idempotency:** `backend/seed_foods.py` checks existing records by `name` before inserting, ensuring repeated runs never create duplicate rows.
+### Key Files
+* `data/vietnamese_foods.csv`: Master UTF-8 CSV dataset containing all normalized food records.
+* `scripts/import_usda_foods.py`: Local ETL script that joins `food.csv` and `food_nutrient.csv` (`nutrient_id`: `1008` Energy, `1003` Protein, `1005` Carbs, `1004` Fat), filters out baby food, organ meats, fast foods, and overly verbose entries, auto-assigns `meal_slot` and `preference_tags`, and appends clean records without duplicates.
+* `backend/seed_foods.py`: Idempotent database seeder using `csv.DictReader` and SQLAlchemy. It checks existing rows by `Food.name` so repeated runs safely insert only new items.
+
+### CSV Schema Conventions
+* **Encoding:** UTF-8 (`encoding="utf-8"`). *(Note: If opening directly in Windows Excel, use **Data → From Text/CSV → File Origin: 65001: Unicode (UTF-8)** to display Vietnamese diacritics properly).*
+* **Allowed `meal_slot` values:** Comma-separated subset of `breakfast`, `lunch`, `dinner`, `snack`.
+* **Allowed `preference_tags` values:** Comma-separated tags such as `high-protein`, `low-carb`, `low-calorie`, `vegetarian`, `vegan`, `no-pork`, `seafood`, `budget`, `high-calorie`.
 
 ---
 
-## 4. Collection Checklist & Progress
+## 3. Team Guide: How to Seed, Inspect & Test the Database
 
-- [x] Define `Food` SQLAlchemy schema with `nutrition_source` and `price_source` audit fields.
-- [x] Create initial seed script (`backend/seed_foods.py`) and verify idempotency via unit tests.
-- [ ] Expand `data/vietnamese_foods.csv` to **60+ curated Vietnamese dishes** covering all meal slots and budget tiers.
-- [ ] Refactor `backend/seed_foods.py` to ingest records directly from `data/vietnamese_foods.csv`.
-- [ ] (Optional / Next Task) Curate `data/exercises.csv` (~40 exercises with MET values) from Free Exercise DB.
+Because the isolated local PostgreSQL instance runs on port `55432` and is managed by `manage.py`, follow these steps after pulling the latest code:
+
+### Step 1: Start Local PostgreSQL & Application Server
+Open **Terminal 1** in the project root and run:
+```powershell
+.\.venv\Scripts\python.exe manage.py run
+```
+Wait until the isolated PostgreSQL instance (`127.0.0.1:55432`) and FastAPI server (`http://127.0.0.1:8013`) are up and running.
+
+### Step 2: Seed the Food Dataset into PostgreSQL
+Open **Terminal 2**, load the local database credentials, and run the seeder:
+```powershell
+$db = Get-Content .local\database.json | ConvertFrom-Json
+$env:DATABASE_URL = "postgresql+psycopg://fitness:$($db.password)@127.0.0.1:55432/fitness_demo"
+.\.venv\Scripts\python.exe -m backend.seed_foods
+```
+Expected output:
+```text
+Seeded <N> new food items from vietnamese_foods.csv. Total foods in database: <TOTAL>.
+```
+*(Running this command multiple times is completely safe; duplicate names are automatically skipped).*
+
+### Step 3: Verify & Inspect Data
+You can verify the seeded records in three ways:
+1. **Interactive API Docs (Swagger UI):** Open `http://127.0.0.1:8013/docs` in your browser and test `GET /api/foods` with filters (`meal_slot`, `max_price_vnd`, `tag`).
+2. **Quick PowerShell Check:**
+   ```powershell
+   $foods = Invoke-RestMethod http://127.0.0.1:8013/api/foods
+   "Total foods via API: $($foods.Count)"
+   $foods | Select-Object -First 5 id, name, calories, protein_g, price_vnd | Format-Table
+   ```
+3. **Direct Database Row Count:**
+   ```powershell
+   .\.venv\Scripts\python.exe -c "from sqlalchemy import func, select; from backend.database import SessionLocal; from backend.models import Food; db=SessionLocal(); print('Total DB:', db.execute(select(func.count(Food.id))).scalar_one())"
+   ```
+
+### Step 4: Run Automated Tests
+Stop the server in Terminal 1 (`Ctrl + C`) if needed, then run the full test suite (including `tests/test_foods.py`, which verifies CRUD endpoints, filtering, soft-deactivation, and CSV seed idempotency):
+```powershell
+.\.venv\Scripts\python.exe manage.py test
+```
+*(Optional: To shut down the background PostgreSQL process when finished working, run `.\.venv\Scripts\python.exe manage.py stop-db`).*
+
+---
+
+## 4. Future Expansion (Exercises Dataset)
+
+For upcoming workout recommendation features (`exercises` table), the recommended open datasets are:
+* **Free Exercise DB** (`https://github.com/yuhonas/free-exercise-db`): 873 structured exercises with muscle groups, equipment, difficulty levels, and instructions.
+* **Compendium of Physical Activities** (`https://pacompendium.com`): Scientific **MET** values for calorie burn calculation ($\text{Calories} = \text{MET} \times \text{weight\_kg} \times \text{duration\_hours}$).

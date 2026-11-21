@@ -1,7 +1,7 @@
 import csv
 from decimal import Decimal
 from pathlib import Path
-from sqlalchemy import select
+from sqlalchemy import func, select
 from backend.database import SessionLocal
 from backend.models import Food
 
@@ -41,7 +41,8 @@ def seed_foods(csv_path: Path = DEFAULT_CSV_PATH) -> int:
                 db.add(Food(**item))
                 added += 1
         db.commit()
-        print(f"Seeded {added} new food items from {csv_path.name}.")
+        total = db.execute(select(func.count(Food.id))).scalar_one()
+        print(f"Seeded {added} new food items from {csv_path.name}. Total foods in database: {total}.")
         return added
 
 
