@@ -1,6 +1,6 @@
 # Group 13 Project Specification
 
-**Smart Nutrition and Fitness System · Draft 0.5 · 21 November 2026**
+**Smart Nutrition and Fitness System · Draft 0.6 · 21 November 2026**
 
 This document defines the shared scope, architecture, roles, and workflow. Each sprint document contains its stories, acceptance criteria, API/schema changes, tasks, tests, and work log. Member names follow the roster below. Task acknowledgements, reviewer availability, and deadlines still need to be recorded in the relevant issues.
 
@@ -10,11 +10,13 @@ This document defines the shared scope, architecture, roles, and workflow. Each 
 | File                               | Contents                                                                | Current status                                                   |
 | ---------------------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | [PROJECT_SPEC.md](PROJECT_SPEC.md) | Shared goals, scope, architecture, and collaboration workflow           | Shared draft                                                     |
-| [SPRINT_1.md](sprints/SPRINT_1.md) | Accounts, profiles, measurements, BMI/TDEE, history, and administration | Measurement/BMI demo available, full acceptance criteria pending |
+| [SPRINT_1.md](sprints/SPRINT_1.md) | Accounts, profiles, measurements, BMI/TDEE, history, and administration | Measurement/BMI demo and TDEE helper available; integration pending |
 | [SPRINT_2.md](sprints/SPRINT_2.md) | Exercise catalog, workout plans, completion, and streaks                | Proposed for refinement, implementation pending                  |
 | [SPRINT_3.md](sprints/SPRINT_3.md) | Vietnamese foods, meal suggestions, integration, and release            | Proposed for refinement, implementation pending                  |
 
 **Where to update information** — Update shared scope, architecture, and workflow here. Update story details and rules in the sprint that owns them. Later tasks should reference the original rule ID and document when reusing a rule.
+
+**Starting Sprint 1:** each member reads their [first action](sprints/SPRINT_1.md#first-action-for-each-member), then the [implementation checklist](sprints/SPRINT_1.md#implementation-checklists) for their task. Tuấn Anh and the reviewers should also read the [database deliverables](sprints/SPRINT_1.md#database-deliverables-for-s1-03) before implementing S1-03.
 
 ## Product Goal
 
@@ -167,5 +169,6 @@ When switching AI tools or handing work to another person, provide the commit, t
 | 0.3     | 19 November 2026 | Translate repository documentation into English and update navigation links         | Translation awaiting team review |
 | 0.4 | 20 November 2026 | Synchronize the roster across sprint assignments and planning artifacts | Names supplied by the user; task acknowledgements and reviews pending |
 | 0.5 | 21 November 2026 | Link the sourced S1-07 TDEE proposal and integration handover | D-02 awaits team review; API/UI integration pending |
+| 0.6 | 21 November 2026 | Link actionable Sprint 1 member/task checklists and database handoff requirements | Documentation clarified; task completion still requires verification/review |
 
 References include `Project Description.docx`, the Group 13 Agile workbook (`Sprint_Agile_Group13 1.xlsx`, converted from the original CSV), the project execution guide, the tool checklist, and repository code. Sprints 2 and 3 expand their corresponding WBS entries as proposals. The team confirms new algorithms, limits, and dates in the decision tables.
