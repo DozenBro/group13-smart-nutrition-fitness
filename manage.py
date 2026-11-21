@@ -76,9 +76,9 @@ def prepare_database():
     ).returncode == 0
     
     if not running:
-        # FIX: Added -c unix_socket_directories='/tmp' to prevent permission denied errors on Linux
-        execute([str(pg / f'pg_ctl{EXE}'), '-D', str(data), '-l', LOCAL / 'postgres.log',
-                 '-o', f"-p {PG_PORT} -h 127.0.0.1 -c unix_socket_directories='/tmp'", '-w', 'start'])
+            pg_opts = f"-p {PG_PORT} -h 127.0.0.1" if sys.platform == 'win32' else f"-p {PG_PORT} -h 127.0.0.1 -c unix_socket_directories='/tmp'"
+            execute([str(pg / f'pg_ctl{EXE}'), '-D', str(data), '-l', LOCAL / 'postgres.log',
+                     '-o', pg_opts, '-w', 'start'])
                  
     import psycopg
     from psycopg import sql
