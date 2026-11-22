@@ -10,7 +10,7 @@ Read the [main specification](../PROJECT_SPEC.md) before taking a task. The orig
 
 **Acceptance flow** — A Member registers, logs in, updates their profile, saves their own measurements, and views BMI/TDEE, history, and charts. An Admin lists, locks, and unlocks accounts.
 
-Available — Measurement/BMI demo, PostgreSQL, Alembic migrations, account registration/login/logout/session handling, profile read/write, ownership-scoped measurements, a TDEE estimate endpoint returning BMI and estimated kcal/day from the latest measurement and current profile, and a working seed-demo / create-admin provisioning path. The latest verified suite has 133 cases covering measurements (ownership-scoped), health/TDEE, foods, auth, profiles, cross-account permissions, and the estimate endpoint. Pending — Frontend integration for login/profile (S1-05), dashboard and chart (S1-08), admin account lock/unlock (S1-09), browser acceptance and staging (S1-10), and formal team decisions on D-02/D-03.
+**Available** — Measurement/BMI demo, PostgreSQL, Alembic migrations, account registration/login/logout/session handling, profile read/write, ownership-scoped measurements, a TDEE estimate endpoint returning BMI and estimated kcal/day from the latest measurement and current profile, admin account list/lock/unlock with session revocation, and a working `seed-demo` / `create-admin` provisioning path. The latest verified suite has 143 cases covering measurements (ownership-scoped), health/TDEE, foods, auth, profiles, cross-account permissions, the estimate endpoint, and admin lock/unlock. **Pending** — Frontend integration for login/profile (S1-05), dashboard and chart (S1-08), admin UI (Bảo's S1-09 share), browser acceptance and staging (S1-10), and formal team decisions on D-02/D-03.
 
 **S1-07 handover** — [PR #2](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/2) was merged into `main`. The [worked handover](../handover/S1-07_HEALTH_HANDOVER.md) is now available there. Merging code does not record a D-02 decision or acceptance of the complete US-H04 story; those still need explicit team evidence.
 
@@ -210,7 +210,7 @@ Use **Not started → In progress → In review → Done**. Use **Blocked** with
 | S1-06 | Ownership filtering for measurements and cross-account tests | Tuấn Anh + Đạt / Tá Anh | S1-03, S1-04 | To be filled | In review | [PR #11](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/11) |
 | S1-07 | Sourced TDEE equation, independent examples, and unit tests | Tá Anh / Thắng | D-02 | To be filled | In review; D-02 and human verification pending | [Issue #1](https://github.com/DozenBro/group13-smart-nutrition-fitness/issues/1), [PR #2](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/2) |
 | S1-08 | BMI/TDEE dashboard and history chart | Bảo / Hưng | S1-06, S1-07 | To be filled | Not started | Not created |
-| S1-09 | Admin lock/unlock and locked-user session tests | Tuấn Anh + Bảo / Đạt | S1-04 | To be filled | Not started | Not created |
+| S1-09 | Admin lock/unlock and locked-user session tests | Tuấn Anh + Bảo / Đạt | S1-04 | To be filled | In review (backend) | [PR #12](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/12) |
 | S1-10 | Second-machine setup, browser testing, and staging | Hưng / Bảo | D-06, integrated flow | To be filled | Not started | Not created |
 | S1-11 | Sprint 1 review, feedback, and improvements | Tá Anh + Hưng / whole team | Acceptance results | To be filled | Not started | Not created |
 
@@ -346,7 +346,7 @@ If a named reviewer also authors part of a task, another teammate must review th
 | US-H05 | `test_newest_first_and_limit` | Ownership filtering, charts, and error/empty/loading states |
 | US-A01, US-A02 | None yet | Duplicate email, invalid login, logout, expiry, and Admin permissions |
 | US-H01, US-H04 | `tests/test_health.py`: independent TDEE fixtures, five factors, rounding, invalid inputs, and proposed age bounds | Human review of D-02/examples, profile/API integration, and cross-account access |
-| US-AD01 | None yet | Member denial, old-session locking, unlocking, and data preservation |
+| US-AD01 | tests/test_admin.py: no-auth 401, member 403, admin list, lock sets is_locked, lock revokes old sessions, locked login 403, unlock allows re-login with data preserved, unlock does not restore old tokens, 404 on missing user | Admin UI (Bảo) still pending; direct API acceptance by Đạt per S1-09 checklist item 3 |
 | CI | EV-01 | Successful CI for the demonstrated commit |
 
 Existing tests are in [tests/test_measurements.py](../../tests/test_measurements.py). Run from the repository root on Windows.
@@ -377,6 +377,7 @@ Apply the [shared Definition of Done](../PROJECT_SPEC.md#definition-of-done). St
 | EV-02 | 19 November 2026 | Initial measurement/BMI code created with AI assistance at the user's request | Commit `cb29921`, backend/frontend/test/migration files in the repository | Team attribution to A–F is pending |
 | EV-03 | 21 November 2026 | Auth migration applied cleanly and full suite passed on `S1-03-accounts-migration` | Local: `manage.py test` → 64 passed; `alembic heads` → one head. PR: [PR #7](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/7) | Local run only; CI evidence pending until PR merges. Đạt's S1-03 review pending |
 | EV-04 | 21 November 2026 | Measurement ownership scoping and TDEE estimate endpoint verified on `feature/S1-06-ownership-and-estimate` | Local: `manage.py test` → 133 passed; TDEE fixture matches S1-07 H-01 (2594.31). PR: [PR #11](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/11) | Local run only; CI evidence pending until PR merges. Đạt's S1-06 review pending |
+| EV-05 | 21 November 2026 | Admin account management and locked-session revocation verified on feature/S1-09-admin-lock | Local: manage.py test → 143 passed. PR: PR #12 | Local run only; CI evidence pending until PR merges. Admin UI (Bảo) and Đạt's direct-API acceptance pending |
 
 Earlier verification recorded 12 passing PostgreSQL tests and browser checks for saving, refresh, invalid input, and a narrow screen. Members should rerun the checks on their machines and record their names and results when accepting the handover.
 
@@ -467,6 +468,16 @@ Blockers and next steps: [if any]
 - Verification: `.venv/bin/python manage.py test` → 133 passed (10 new permission/estimate tests), 1 pre-existing warning. Auth and profile tests still pass. TDEE estimate matches S1-07 H-01 (70/175/male/25/moderately_active → 2594.31). Manual two-user check confirmed isolation and per-account estimates. Savepoint fixture kept in `test_measurements.py` for stronger isolation; conftest truncation used for auth/permissions tests.
 - Handover: [PR #11](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/11). Đạt reviews; Tá Anh confirms calculation; Bảo uses the contract for S1-08. No human approval has been recorded or inferred.
 
+### S1-LOG-007: Admin Account Management Backend
+
+- Date: 21 November 2026, Asia/Ho_Chi_Minh.
+- AI assistance: drafted `backend/admin.py` (list/lock/unlock routes), `require_admin` dependency in `backend/dependencies.py`, the `admin_headers` fixture in `tests/conftest.py`, and 10 tests in `tests/test_admin.py`. Noted a branch-stacking issue: admin.py must import `UserOutput` from `backend.auth_schemas` (not `backend.schemas`), because S2's workout module turned `backend/schemas` into a package that doesn't re-export auth schemas.
+- Changed files: `backend/admin.py`, `backend/dependencies.py`, `backend/main.py`, `tests/conftest.py`, `tests/test_admin.py`.
+- Repository baseline: `a5de397`; branch `feature/S1-09-admin-lock`, stacked on `feature/S1-06-ownership-and-estimate`. This PR supplies the admin backend; Bảo's admin UI and Đạt's direct-API acceptance remain pending.
+- Verification: `.venv/bin/python manage.py test` → 143 passed (10 new admin tests), 1 pre-existing warning. Tests cover no-auth 401, member 403 on list/lock, admin list, lock sets `is_locked`, lock revokes every non-revoked session (old token → 401 on `/me`), locked user login → 403, unlock allows re-login with measurements and profile preserved, unlock does not restore old tokens, and 404 on missing user. Manual UI acceptance is Đạt's; UI visibility alone is not an authorization check.
+- Handover: [PR #12](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/12). Đạt reviews; Bảo integrates the UI; Tá Anh reviews. No human approval has been recorded or inferred.
+
+
 ## Revision History
 
 | Version | Date | Change | Confirmation |
@@ -480,3 +491,4 @@ Blockers and next steps: [if any]
 | 0.7 | 21 November 2026 | Record S1-03 auth migration implementation, fork fix, create-admin, and 64-test evidence; S1-03 status → In review | Tuấn Anh's session; Đạt review and D-03 outcomes pending |
 | 0.8 | 21 November 2026 | Record S1-04 auth/profile API implementation and API contract; S1-04 status → In review | Tuấn Anh's session; Đạt review pending |
 | 0.9 | 21 November 2026 | Record S1-06 measurement ownership, TDEE estimate endpoint, and 133-test evidence; S1-06 status → In review | Tuấn Anh's session; Đạt review pending |
+| 0.10 | 22 November 2026 | Record S1-09 admin backend, session revocation, and 143-test evidence; S1-09 backend → In review | Tuấn Anh's session; Đạt review and Bảo UI pending |
