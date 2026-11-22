@@ -34,3 +34,72 @@ caption { text-align: left; font-size: .875rem; margin: 10px 0; color: #596b75; 
 .error { padding: 12px; background: #fce9e7; color: #8b241c; line-height: 1.5; }
 .success { padding: 12px; background: #e5f3ec; color: #1e5b3e; line-height: 1.5; }
 @media (max-width: 740px) { main { padding: 24px 16px; } .layout { grid-template-columns: 1fr; gap: 16px; } section { padding: 20px; } }
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.user-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-email {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.auth-card {
+  max-width: 420px;
+  margin: 2rem auto;
+}
+
+.tabs, .nav-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.tab {
+  background: transparent;
+  color: inherit;
+  border: 1px solid currentColor;
+  opacity: 0.7;
+}
+
+.tab.active {
+  opacity: 1;
+  font-weight: 600;
+}
+
+select {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  font: inherit;
+}
+
+.profile-summary {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.profile-summary div {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+  padding-bottom: 0.4rem;
+}
+
+.profile-summary dt {
+  opacity: 0.75;
+}
+
+.profile-summary dd {
+  margin: 0;
+  font-weight: 600;
+}
