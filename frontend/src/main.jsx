@@ -4,6 +4,7 @@ import { authApi, clearToken, getToken } from './api';
 import AuthView from './components/AuthView';
 import ProfileView from './components/ProfileView';
 import MeasurementsView from './components/MeasurementsView';
+import AdminView from './components/AdminView';
 import './style.css';
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
     } finally {
       clearToken();
       setUser(null);
+      setActiveTab('measurements');
       setLoggingOut(false);
     }
   }
@@ -59,7 +61,7 @@ function App() {
         </div>
         {user && (
           <div className="user-bar">
-            <span className="user-email">{user.email}</span>
+            <span className="user-email">{user.email} ({user.role})</span>
             <button type="button" className="secondary" onClick={handleLogout} disabled={loggingOut}>
               {loggingOut ? 'Logging out…' : 'Log out'}
             </button>
@@ -70,7 +72,7 @@ function App() {
       {checkingAuth ? (
         <p role="status">Checking session…</p>
       ) : !user ? (
-        <AuthView onLoginSuccess={(u) => { setUser(u); setActiveTab('profile'); }} />
+        <AuthView onLoginSuccess={(u) => { setUser(u); setActiveTab('measurements'); }} />
       ) : (
         <>
           <nav className="nav-tabs" aria-label="Main navigation">
@@ -79,7 +81,7 @@ function App() {
               className={activeTab === 'measurements' ? 'tab active' : 'tab'}
               onClick={() => setActiveTab('measurements')}
             >
-              Body measurements
+              Dashboard & history
             </button>
             <button
               type="button"
@@ -88,12 +90,28 @@ function App() {
             >
               Health profile
             </button>
+            {user.role === 'admin' && (
+              <button
+                type="button"
+                className={activeTab === 'admin' ? 'tab active' : 'tab'}
+                onClick={() => setActiveTab('admin')}
+              >
+                Admin
+              </button>
+            )}
           </nav>
 
-          {activeTab === 'measurements' ? (
-            <MeasurementsView onSessionExpired={handleSessionExpired} />
-          ) : (
+          {activeTab === 'measurements' && (
+            <MeasurementsView
+              onSessionExpired={handleSessionExpired}
+              onGoToProfile={() => setActiveTab('profile')}
+            />
+          )}
+          {activeTab === 'profile' && (
             <ProfileView onSessionExpired={handleSessionExpired} />
+          )}
+          {activeTab === 'admin' && user.role === 'admin' && (
+            <AdminView currentUser={user} onSessionExpired={handleSessionExpired} />
           )}
         </>
       )}

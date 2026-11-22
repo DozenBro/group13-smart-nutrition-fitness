@@ -1,8 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { measurementApi } from '../api';
+import { healthApi, measurementApi } from '../api';
+import HistoryChart from './HistoryChart';
 
-export default function MeasurementsView({ onSessionExpired }) {
+const FIELD_LABELS = {
+  age_years: 'Age (19–78)',
+  sex_for_equation: 'Sex',
+  activity_level: 'Activity level',
+};
+
+export default function MeasurementsView({ onSessionExpired, onGoToProfile }) {
   const [rows, setRows] = useState([]);
+  const [estimate, setEstimate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [weight, setWeight] = useState('');
@@ -10,11 +18,16 @@ export default function MeasurementsView({ onSessionExpired }) {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
 
-  async function loadHistory() {
+  async function loadDashboard() {
     setLoading(true);
     setError('');
     try {
-      setRows(await measurementApi.list());
+      const [historyData, estimateData] = await Promise.all([
+        measurementApi.list(),
+        healthApi.estimate(),
+      ]);
+      setRows(historyData);
+      setEstimate(estimateData);
     } catch (e) {
       if (e.status === 401) {
         onSessionExpired();
@@ -27,7 +40,7 @@ export default function MeasurementsView({ onSessionExpired }) {
   }
 
   useEffect(() => {
-    loadHistory();
+    loadDashboard();
   }, []);
 
   async function save(event) {
@@ -43,8 +56,10 @@ export default function MeasurementsView({ onSessionExpired }) {
     try {
       const row = await measurementApi.create(Number(weight), Number(height));
       setRows((previous) => [row, ...previous].slice(0, 30));
-      setMessage('Measurement saved. You can refresh the page to check it.');
+      setMessage('Measurement saved. Dashboard updated.');
       setWeight('');
+      const updatedEstimate = await healthApi.estimate();
+      setEstimate(updatedEstimate);
     } catch (e) {
       if (e.status === 401) {
         onSessionExpired();
@@ -56,7 +71,10 @@ export default function MeasurementsView({ onSessionExpired }) {
     }
   }
 
-  const latest = rows[0];
+  const missingLabels = (estimate?.tdee_missing_fields || []).map(
+    (f) => FIELD_LABELS[f] || f
+  );
+
   return (
     <div className="layout">
       <section className="entry" aria-labelledby="entry-title">
@@ -94,40 +112,77 @@ export default function MeasurementsView({ onSessionExpired }) {
 
       <section aria-labelledby="history-title">
         <div className="section-heading">
-          <h2 id="history-title">Recent history</h2>
-          <button type="button" className="secondary" onClick={loadHistory} disabled={loading || saving}>
+          <h2 id="history-title">Health dashboard & history</h2>
+          <button type="button" className="secondary" onClick={loadDashboard} disabled={loading || saving}>
             Reload
           </button>
         </div>
-        {latest && (
-          <p className="latest">
-            Latest BMI <strong>{latest.bmi.toFixed(2)}</strong>
-            <span>BMI = weight in kg / (height in metres)²</span>
-          </p>
-        )}
+
         {loading ? (
-          <p role="status">Loading history…</p>
-        ) : rows.length === 0 ? (
-          <p className="empty">No measurements yet. Add your first record.</p>
+          <p role="status">Loading dashboard…</p>
         ) : (
-          <div className="table-scroll">
-            <table>
-              <caption>The 30 most recent records, newest first.</caption>
-              <thead>
-                <tr><th>Recorded at</th><th>kg</th><th>cm</th><th>BMI</th></tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => (
-                  <tr key={row.id}>
-                    <td>{new Date(row.created_at).toLocaleString('en-GB')}</td>
-                    <td>{row.weight_kg}</td>
-                    <td>{row.height_cm}</td>
-                    <td>{row.bmi.toFixed(2)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <div className="metrics-grid">
+              <div className="metric-card">
+                <span className="metric-label">Latest BMI</span>
+                {estimate?.bmi != null ? (
+                  <>
+                    <strong className="metric-value">{estimate.bmi.toFixed(2)}</strong>
+                    <span className="metric-sub">kg / m²</span>
+                  </>
+                ) : (
+                  <p className="empty">Record your first measurement to see BMI.</p>
+                )}
+              </div>
+
+              <div className="metric-card">
+                <span className="metric-label">Estimated TDEE</span>
+                {estimate?.tdee != null ? (
+                  <>
+                    <strong className="metric-value">{estimate.tdee.toFixed(2)} kcal/day</strong>
+                    <span className="metric-sub">Daily energy expenditure estimate</span>
+                  </>
+                ) : estimate?.measurement_id == null ? (
+                  <p className="empty">Record your first measurement first.</p>
+                ) : (
+                  <div className="missing-prompt">
+                    <p className="empty">
+                      TDEE unavailable. Complete your profile:{' '}
+                      <strong>{missingLabels.join(', ') || 'required fields'}</strong>.
+                    </p>
+                    <button type="button" className="secondary" onClick={onGoToProfile}>
+                      Go to Health profile
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <HistoryChart rows={rows} />
+
+            {rows.length === 0 ? (
+              <p className="empty">No measurements yet. Add your first record.</p>
+            ) : (
+              <div className="table-scroll">
+                <table>
+                  <caption>The 30 most recent records, newest first.</caption>
+                  <thead>
+                    <tr><th>Recorded at</th><th>kg</th><th>cm</th><th>BMI</th></tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((row) => (
+                      <tr key={row.id}>
+                        <td>{new Date(row.created_at).toLocaleString('en-GB')}</td>
+                        <td>{row.weight_kg}</td>
+                        <td>{row.height_cm}</td>
+                        <td>{row.bmi.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
         )}
       </section>
     </div>
