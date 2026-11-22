@@ -86,3 +86,13 @@ export const measurementApi = {
       body: JSON.stringify({ weight_kg, height_cm }),
     }),
 };
+
+export const healthApi = {
+  estimate: () => request('/api/health/estimate'),
+};
+
+export const adminApi = {
+  listUsers: () => request('/api/admin/users'),
+  lockUser: (userId) => request(`/api/admin/users/${userId}/lock`, { method: 'POST' }),
+  unlockUser: (userId) => request(`/api/admin/users/${userId}/unlock`, { method: 'POST' }),
+};
