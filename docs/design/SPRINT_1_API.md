@@ -1,11 +1,10 @@
-```markdown
 # Sprint 1 API Contract
 
-**21 November 2026 · Implemented by S1-04**
+**21 November 2026 · Implemented by S1-04 and S1-06**
 
 [OpenAPI (Swagger UI)](http://127.0.0.1:8013/docs) when the backend is running · [Sprint 1 requirements](../sprints/SPRINT_1.md) · [Detailed ERD](SPRINT_1_ERD.md)
 
-This document records the request/response contract for the account and profile endpoints implemented in S1-04. It supplements the measurement and food endpoints already documented in `SPRINT_1.md`. Fictional examples; no real user data.
+This document records the request/response contract for the account, profile, and measurement endpoints implemented in S1-04 and S1-06, plus the TDEE estimate endpoint. It supplements the food endpoints already documented in `SPRINT_1.md`. Fictional examples; no real user data.
 
 ## Conventions
 
@@ -145,24 +144,110 @@ All three fields are required together. Partial updates are not supported, becau
 
 The database CHECK constraints from the S1-03 migration enforce the same limits at the DB level (defense in depth); the Pydantic validation is the primary gate and the source of the `422`.
 
-## Endpoints not in this contract (for reference)
+## `GET /api/measurements` — requires auth
 
-The following are implemented elsewhere in Sprint 1 and documented in `SPRINT_1.md`, not repeated here:
+**Headers:** `Authorization: Bearer <token>`
 
-- `GET /api/measurements`, `POST /api/measurements` — S1-03 bridge currently attributes to the Demo User; ownership filtering (S1-06) will replace this.
-- `GET /api/foods`, `POST /api/foods`, `DELETE /api/foods/{id}` — Sprint 3 prep.
+Returns the authenticated user's measurements, newest first.
+
+**Query:** `limit` from 1 to 100, default 30.
+
+**Response `200`:**
+```json
+[
+  { "id": 42, "weight_kg": 70.0, "height_cm": 175.0, "bmi": 22.86, "created_at": "2026-11-21T09:10:00Z" }
+]
+```
+
+`bmi` is computed per row. The response never contains a stored TDEE — see `GET /api/health/estimate` for the current estimate.
+
+**Responses on failure:** `401` (no/invalid/expired/revoked token) or `422` (`limit` out of range).
+
+## `POST /api/measurements` — requires auth
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Request:**
+```json
+{ "weight_kg": 70, "height_cm": 175 }
+```
+
+Extra fields are rejected (`extra='forbid'`); in particular, `user_id` cannot be supplied by the client — ownership comes from the token.
+
+**Response `201`:**
+```json
+{ "id": 42, "weight_kg": 70.0, "height_cm": 175.0, "bmi": 22.86, "created_at": "2026-11-21T09:10:00Z" }
+```
+
+**Responses on failure:** `401` (no/invalid token) or `422` (out-of-range weight/height).
+
+## `GET /api/health/estimate` — requires auth
+
+**Headers:** `Authorization: Bearer <token>`
+
+Returns the authenticated user's current health estimate, using their **most recent measurement** and their **current profile**. This is not a historical TDEE: the estimate reflects today's profile against today's measurement, per ERD §measurements.
+
+**Response `200`** (profile complete):
+```json
+{
+  "bmi": 22.86,
+  "tdee": 2594.31,
+  "tdee_missing_fields": [],
+  "measurement_id": 42,
+  "measurement_created_at": "2026-11-21T09:10:00Z",
+  "profile_complete": true
+}
+```
+
+**Response `200`** (profile incomplete):
+```json
+{
+  "bmi": 22.86,
+  "tdee": null,
+  "tdee_missing_fields": ["age_years", "sex_for_equation", "activity_level"],
+  "measurement_id": 42,
+  "measurement_created_at": "2026-11-21T09:10:00Z",
+  "profile_complete": false
+}
+```
+
+**Response `200`** (no measurement yet):
+```json
+{
+  "bmi": null,
+  "tdee": null,
+  "tdee_missing_fields": [],
+  "measurement_id": null,
+  "measurement_created_at": null,
+  "profile_complete": false
+}
+```
+
+The frontend should:
+- Hide or disable the TDEE panel when `tdee` is `null`
+- Show a "fill in your profile" prompt listing `tdee_missing_fields` when `profile_complete` is `false` but `bmi` is not `null`
+- Show a "record your first measurement" prompt when `measurement_id` is `null`
+
+The formula and inputs follow the S1-07 TDEE proposal; the result is `null` when the profile is incomplete, per US-H04 AC3.
+
+**Responses on failure:** `401` (no/invalid/expired/revoked token).
+
+## `GET /api/foods`, `POST /api/foods`, `DELETE /api/foods/{id}` — public (Sprint 3 prep)
+
+These are documented in `SPRINT_1.md`; not repeated here. They do not participate in Sprint 1 auth.
 
 Admin account management (S1-09: list, lock, unlock) will extend this document when implemented.
 
 ## Open decisions referenced by this contract
 
 - **D-03:** Bearer-token transport, 7-day lifetime, sha256 token hash, lowercase+strip email, and min-8-character password are implemented per this contract. CSRF protection is not applicable to a Bearer-header design. Initial Admin provisioning is via `manage.py create-admin`. D-03 remains open for the group's formal confirmation.
-- **D-02:** Profile field limits (age 19–78, the five activity codes) follow the S1-07 TDEE proposal. D-02 remains open for team confirmation.
+- **D-02:** Profile field limits (age 19–78, the five activity codes) follow the S1-07 TDEE proposal. The `GET /api/health/estimate` endpoint uses the S1-07 proposed formula; if D-02 changes the equation or activity factors, that endpoint inherits the change. D-02 remains open for team confirmation.
 
 ## Related files
 
-- `backend/auth.py`, `backend/profiles.py`, `backend/schemas.py`, `backend/dependencies.py` — implementation.
-- `tests/test_auth.py`, `tests/test_profiles.py` — 18 tests covering the endpoints above.
-- `backend/models.py` §`User`, `Profile`, `Session` — storage shapes.
-- `migrations/versions/002_auth_and_ownership.py` — schema, constraints, and indexes.
-```
+- `backend/auth.py`, `backend/profiles.py`, `backend/auth_schemas.py`, `backend/dependencies.py` — S1-04 auth and profile implementation.
+- `backend/measurements.py`, `backend/measurement_schemas.py`, `backend/health_api.py` — S1-06 measurement ownership and TDEE estimate implementation.
+- `tests/test_auth.py`, `tests/test_profiles.py` — 18 tests for the account and profile endpoints.
+- `tests/test_measurements.py`, `tests/test_permissions.py` — measurement tests plus cross-account and estimate tests.
+- `backend/models.py` §`User`, `Profile`, `Session`, `Measurement` — storage shapes.
+- `migrations/versions/002_auth_and_ownership.py` — schema, constraints, and indexes for Sprint 1 accounts.

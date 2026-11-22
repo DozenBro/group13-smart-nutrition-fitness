@@ -18,37 +18,18 @@ from .models import Food, Measurement, User
 from .auth import router as auth_router
 from .profiles import router as profiles_router
 from .workout_api import router as workout_router
+from .measurements import router as measurements_router
+from .health_api import router as health_router
 
 
 app = FastAPI(title='Group 13 · Measurement demo', version='0.1.0')
 app.include_router(auth_router)
 app.include_router(profiles_router)
+app.include_router(measurements_router)
+app.include_router(health_router)
 SessionDependency = Annotated[Session, Depends(get_session)]
 app.include_router(workout_router)
 
-
-class MeasurementInput(BaseModel):
-    model_config = ConfigDict(extra='forbid')
-    weight_kg: Decimal = Field(gt=0, le=500, max_digits=5, decimal_places=2)
-    height_cm: Decimal = Field(ge=50, le=250, max_digits=5, decimal_places=2)
-
-
-class MeasurementOutput(BaseModel):
-    id: int
-    weight_kg: float
-    height_cm: float
-    bmi: float
-    created_at: datetime
-
-
-def measurement_output(row: Measurement) -> MeasurementOutput:
-    return MeasurementOutput(
-        id=row.id,
-        weight_kg=float(row.weight_kg),
-        height_cm=float(row.height_cm),
-        bmi=float(calculate_bmi(row.weight_kg, row.height_cm)),
-        created_at=row.created_at,
-    )
 
 # Schema & Mapper
 class FoodInput(BaseModel):
@@ -110,34 +91,6 @@ async def database_error(request, error):
         'detail': 'Unable to connect to the database. Please try again later.'
     })
 
-
-@app.get('/api/measurements', response_model=list[MeasurementOutput])
-def list_measurements(
-    session: SessionDependency,
-    limit: Annotated[int, Query(ge=1, le=100)] = 30,
-):
-    query = select(Measurement).order_by(
-        Measurement.created_at.desc(), Measurement.id.desc()
-    ).limit(limit)
-    return [measurement_output(row) for row in session.scalars(query)]
-
-
-@app.post('/api/measurements', response_model=MeasurementOutput, status_code=201)
-def create_measurement(data: MeasurementInput, session: SessionDependency):
-    # S1-03 bridge: until S1-06 wires authenticated identity, attribute
-    # new measurements to the Demo User created by the migration.
-    demo_user = session.scalar(select(User).where(User.email == 'demo@example.com'))
-    if demo_user is None:
-        raise HTTPException(500, 'Demo user missing; migration may not have run.')
-    row = Measurement(
-        weight_kg=data.weight_kg,
-        height_cm=data.height_cm,
-        user_id=demo_user.id,
-    )
-    session.add(row)
-    session.commit()
-    session.refresh(row)
-    return measurement_output(row)
 
 @app.get('/api/foods', response_model=list[FoodOutput])
 def list_foods(

@@ -21,9 +21,10 @@ def client():
     with engine.connect() as connection:
         transaction = connection.begin()
         session = Session(bind=connection, join_transaction_mode='create_savepoint')
-        # Reads use exactly this test transaction; the fixture rolls it all back.
+
         def test_session():
             yield session
+
         app.dependency_overrides[get_session] = test_session
         try:
             with TestClient(app) as test_client:
@@ -35,17 +36,32 @@ def client():
     engine.dispose()
 
 
+@pytest.fixture
+def member_headers(client):
+    email = 'member-measurement@example.com'
+    password = 'MemberFixture123!'
+    client.post('/api/auth/register', json={'email': email, 'password': password})
+    token = client.post(
+        '/api/auth/login', json={'email': email, 'password': password}
+    ).json()['token']
+    return {'Authorization': f'Bearer {token}'}
+
+
 def test_bmi_known_example():
     assert calculate_bmi(Decimal('70'), Decimal('175')) == Decimal('22.86')
 
 
-def test_save_then_read(client):
-    response = client.post('/api/measurements', json={'weight_kg': 70, 'height_cm': 175})
+def test_save_then_read(client, member_headers):
+    response = client.post(
+        '/api/measurements',
+        json={'weight_kg': 70, 'height_cm': 175},
+        headers=member_headers,
+    )
     assert response.status_code == 201
     record = response.json()
     assert record['bmi'] == 22.86
     assert record['created_at'].endswith('Z') or '+' in record['created_at']
-    history = client.get('/api/measurements').json()
+    history = client.get('/api/measurements', headers=member_headers).json()
     assert history[0] == record
 
 
@@ -60,15 +76,29 @@ def test_save_then_read(client):
     {'weight_kg': 'NaN', 'height_cm': 175},
     {'weight_kg': 70, 'height_cm': 175, 'unexpected': 'value'},
 ])
-def test_invalid_input_does_not_save(client, data):
-    before = client.get('/api/measurements').json()
-    assert client.post('/api/measurements', json=data).status_code == 422
-    assert client.get('/api/measurements').json() == before
+def test_invalid_input_does_not_save(client, member_headers, data):
+    before = client.get('/api/measurements', headers=member_headers).json()
+    assert client.post(
+        '/api/measurements', json=data, headers=member_headers
+    ).status_code == 422
+    assert client.get('/api/measurements', headers=member_headers).json() == before
 
 
-def test_newest_first_and_limit(client):
-    first = client.post('/api/measurements', json={'weight_kg': 70, 'height_cm': 175}).json()
-    second = client.post('/api/measurements', json={'weight_kg': 71, 'height_cm': 175}).json()
-    assert client.get('/api/measurements?limit=1').json() == [second]
+def test_newest_first_and_limit(client, member_headers):
+    first = client.post(
+        '/api/measurements',
+        json={'weight_kg': 70, 'height_cm': 175},
+        headers=member_headers,
+    ).json()
+    second = client.post(
+        '/api/measurements',
+        json={'weight_kg': 71, 'height_cm': 175},
+        headers=member_headers,
+    ).json()
+    assert client.get(
+        '/api/measurements?limit=1', headers=member_headers
+    ).json() == [second]
     assert second['id'] > first['id']
-    assert client.get('/api/measurements?limit=0').status_code == 422
+    assert client.get(
+        '/api/measurements?limit=0', headers=member_headers
+    ).status_code == 422
