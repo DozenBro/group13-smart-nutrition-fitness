@@ -20,6 +20,7 @@ from .profiles import router as profiles_router
 from .workout_api import router as workout_router
 from .measurements import router as measurements_router
 from .health_api import router as health_router
+from .admin import router as admin_router
 
 
 app = FastAPI(title='Group 13 · Measurement demo', version='0.1.0')
@@ -27,8 +28,9 @@ app.include_router(auth_router)
 app.include_router(profiles_router)
 app.include_router(measurements_router)
 app.include_router(health_router)
-SessionDependency = Annotated[Session, Depends(get_session)]
 app.include_router(workout_router)
+app.include_router(admin_router)
+SessionDependency = Annotated[Session, Depends(get_session)]
 
 
 # Schema & Mapper

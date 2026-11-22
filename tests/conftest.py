@@ -33,3 +33,26 @@ def member_headers(client):
         '/api/auth/login', json={'email': email, 'password': password}
     ).json()['token']
     return {'Authorization': f'Bearer {token}'}
+
+
+@pytest.fixture
+def admin_headers(client):
+    from sqlalchemy import update
+
+    from backend.database import SessionLocal
+    from backend.models import User
+
+    email = 'admin-fixture@example.com'
+    password = 'AdminFixture123!'
+    r = client.post('/api/auth/register', json={'email': email, 'password': password})
+    assert r.status_code == 201, r.text
+    user_id = r.json()['id']
+
+    with SessionLocal() as s:
+        s.execute(update(User).where(User.id == user_id).values(role='admin'))
+        s.commit()
+
+    token = client.post(
+        '/api/auth/login', json={'email': email, 'password': password}
+    ).json()['token']
+    return {'Authorization': f'Bearer {token}'}
