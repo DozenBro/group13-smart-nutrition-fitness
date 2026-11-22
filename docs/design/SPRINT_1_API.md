@@ -1,10 +1,10 @@
 # Sprint 1 API Contract
 
-**21 November 2026 · Implemented by S1-04 and S1-06**
+**22 November 2026 · Implemented by S1-04, S1-06, and S1-09**
 
 [OpenAPI (Swagger UI)](http://127.0.0.1:8013/docs) when the backend is running · [Sprint 1 requirements](../sprints/SPRINT_1.md) · [Detailed ERD](SPRINT_1_ERD.md)
 
-This document records the request/response contract for the account, profile, and measurement endpoints implemented in S1-04 and S1-06, plus the TDEE estimate endpoint. It supplements the food endpoints already documented in `SPRINT_1.md`. Fictional examples; no real user data.
+This document records the request/response contract for the account, profile, measurement, TDEE estimate, and admin account-management endpoints implemented in S1-04, S1-06, and S1-09. It supplements the food endpoints already documented in `SPRINT_1.md`. Fictional examples; no real user data.
 
 ## Conventions
 
@@ -12,7 +12,7 @@ This document records the request/response contract for the account, profile, an
 - **Authentication:** `Authorization: Bearer <token>` header on protected endpoints. The token is returned once by `POST /api/auth/login` and is never recoverable from the server.
 - **Session lifetime:** 7 days from login. Expired sessions are rejected with `401`.
 - **Error shape:** all error responses use FastAPI's standard `{"detail": "<message>"}` body.
-- **Status codes:** `401` = not authenticated (missing/invalid/expired/revoked token, or locked account on a protected request); `403` = authenticated but forbidden (only `POST /api/auth/login` on a locked account uses this); `409` = conflict (duplicate email); `422` = Pydantic validation failure.
+- **Status codes:** `401` = not authenticated (missing/invalid/expired/revoked token, or locked account on a protected request); `403` = authenticated but forbidden (only `POST /api/auth/login` on a locked account, or admin endpoints called by a non-admin, use this); `404` = resource not found; `409` = conflict (duplicate email); `422` = Pydantic validation failure.
 - **Email normalization:** emails are lowercased and stripped before storage and lookup. `Alice@Example.COM` and `alice@example.com` are the same account.
 
 ## `POST /api/auth/register` — public
@@ -31,7 +31,8 @@ Creates a Member account. Does not create a session; the client must call `POST 
 
 Extra fields are rejected (`extra='forbid'`). In particular, `role` and `user_id` cannot be supplied by the client — this satisfies US-A01 AC4.
 
-**Responses:**
+**Responses:**# Sprint 1 API Contract
+
 
 - `201` — created:
   ```json
@@ -232,11 +233,62 @@ The formula and inputs follow the S1-07 TDEE proposal; the result is `null` when
 
 **Responses on failure:** `401` (no/invalid/expired/revoked token).
 
+## `GET /api/admin/users` — requires auth + admin role
+
+**Headers:** `Authorization: Bearer <token>`
+
+Returns all accounts, ordered by `id` ascending.
+
+**Response `200`:**
+```json
+[
+  { "id": 1, "email": "admin@example.com", "role": "admin", "is_locked": false, "created_at": "2026-11-21T09:00:00Z" },
+  { "id": 2, "email": "member@example.com", "role": "member", "is_locked": false, "created_at": "2026-11-21T09:05:00Z" }
+]
+```
+
+The user object has the same shape as `GET /api/auth/me`: `id`, `email`, `role`, `is_locked`, `created_at`. Password hashes are never returned (US-AD01 AC5).
+
+**Responses on failure:** `401` (no/invalid token) or `403` (authenticated as member, not admin).
+
+## `POST /api/admin/users/{user_id}/lock` — requires auth + admin role
+
+**Headers:** `Authorization: Bearer <token>`
+
+Sets `users.is_locked = true` and revokes every non-revoked session for that user, in the same transaction. Per ERD §sessions, locking must revoke existing sessions atomically so old tokens cannot be used after the lock.
+
+**Response `200`:**
+```json
+{ "id": 2, "email": "member@example.com", "role": "member", "is_locked": true, "created_at": "2026-11-21T09:05:00Z" }
+```
+
+**Responses on failure:**
+- `401` — no/invalid token
+- `403` — authenticated as member, not admin
+- `404` — user ID does not exist
+
+Once locked:
+- The user cannot log in — `POST /api/auth/login` returns `403` with `{"detail": "Account is locked."}`
+- Any old token the user held now returns `401` on protected endpoints, because every session row was revoked
+
+## `POST /api/admin/users/{user_id}/unlock` — requires auth + admin role
+
+**Headers:** `Authorization: Bearer <token>`
+
+Sets `users.is_locked = false`. Does **not** restore prior sessions — old tokens remain revoked, per ERD §sessions ("Unlocking must not clear prior revocations or restore old tokens"). The member must log in again to obtain a new session.
+
+Prior measurements, profile, and session history are preserved.
+
+**Response `200`:**
+```json
+{ "id": 2, "email": "member@example.com", "role": "member", "is_locked": false, "created_at": "2026-11-21T09:05:00Z" }
+```
+
+**Responses on failure:** `401`, `403`, `404` as above.
+
 ## `GET /api/foods`, `POST /api/foods`, `DELETE /api/foods/{id}` — public (Sprint 3 prep)
 
 These are documented in `SPRINT_1.md`; not repeated here. They do not participate in Sprint 1 auth.
-
-Admin account management (S1-09: list, lock, unlock) will extend this document when implemented.
 
 ## Open decisions referenced by this contract
 
@@ -247,7 +299,9 @@ Admin account management (S1-09: list, lock, unlock) will extend this document w
 
 - `backend/auth.py`, `backend/profiles.py`, `backend/auth_schemas.py`, `backend/dependencies.py` — S1-04 auth and profile implementation.
 - `backend/measurements.py`, `backend/measurement_schemas.py`, `backend/health_api.py` — S1-06 measurement ownership and TDEE estimate implementation.
+- `backend/admin.py` — S1-09 admin account management (`require_admin`, list, lock, unlock).
 - `tests/test_auth.py`, `tests/test_profiles.py` — 18 tests for the account and profile endpoints.
 - `tests/test_measurements.py`, `tests/test_permissions.py` — measurement tests plus cross-account and estimate tests.
+- `tests/test_admin.py` — 10 tests covering admin authorization, lock/revocation, unlock, and data preservation.
 - `backend/models.py` §`User`, `Profile`, `Session`, `Measurement` — storage shapes.
 - `migrations/versions/002_auth_and_ownership.py` — schema, constraints, and indexes for Sprint 1 accounts.
