@@ -1,6 +1,3 @@
-Your `README.md` is stale in more ways than just the test count — it still says "12 cases", still describes only measurement endpoints, and still says authentication is "planned" while you've implemented it. Here's the full updated README, ready to replace the file. I've kept the structure and wording style identical so the diff stays small and Đạt can review it quickly.
-
-```markdown
 # Smart Nutrition & Fitness
 
 [![Build and test](https://github.com/DozenBro/group13-smart-nutrition-fitness/actions/workflows/ci.yml/badge.svg)](https://github.com/DozenBro/group13-smart-nutrition-fitness/actions/workflows/ci.yml)
