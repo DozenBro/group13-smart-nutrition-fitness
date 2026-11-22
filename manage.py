@@ -99,7 +99,7 @@ def database_url(config, name):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['run', 'migrate', 'test', 'stop-db', 'create-admin'])
+    parser.add_argument('action', choices=['run', 'migrate', 'test', 'stop-db', 'create-admin', 'seed-demo'])
     args = parser.parse_args()
     os.chdir(ROOT)
     
@@ -139,7 +139,48 @@ def main():
                 print("  Admin created successfully!")
                 print("   Email: admin@example.com")
                 print("   Password: Admin123!")
-                
+
+    elif args.action == 'seed-demo':
+        from decimal import Decimal
+        from backend.auth_utils import get_password_hash
+        from backend.models import Measurement, User
+        from backend.database import SessionLocal
+
+        with SessionLocal() as session:
+            # Member account
+            member = session.query(User).filter(User.email == 'member@example.com').first()
+            if not member:
+                member = User(
+                    email='member@example.com',
+                    password_hash=get_password_hash('Member123!'),
+                    role='member',
+                    is_locked=False,
+                )
+                session.add(member)
+                session.commit()
+                print('  Created member@example.com / Member123!')
+            else:
+                print('  Member already exists.')
+
+            # Reset the Demo User's placeholder password
+            demo = session.query(User).filter(User.email == 'demo@example.com').first()
+            if demo and demo.password_hash == 'placeholder_hash_for_demo':
+                demo.password_hash = get_password_hash('Demo123!')
+                session.commit()
+                print('  Set demo@example.com password to Demo123!')
+
+            # Fixed sample measurements
+            count = session.query(Measurement).filter(Measurement.user_id == member.id).count()
+            if count == 0:
+                for w, h in [(70, 175), (71, 175), (72, 175)]:
+                    session.add(Measurement(
+                        weight_kg=Decimal(w), height_cm=Decimal(h), user_id=member.id,
+                    ))
+                session.commit()
+                print('  Added 3 demo measurements for member@example.com.')
+            else:
+                print(f'  Member already has {count} measurements; skipping.')
+            
     elif args.action == 'run':
         if not (ROOT / 'frontend/dist/index.html').exists():
             raise SystemExit('Build frontend first: cd frontend, npm install, npm run build.')

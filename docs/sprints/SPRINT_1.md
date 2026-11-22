@@ -204,8 +204,8 @@ Use **Not started → In progress → In review → Done**. Use **Blocked** with
 | --- | --- | --- | --- | --- | --- | --- |
 | S1-01 | Finalize criteria, limits, and D-01/D-02/D-07 | Tá Anh / Thắng | Team meeting | To be filled | Not started | Not created |
 | S1-02 | Figma auth/profile/dashboard/admin and error states | Bảo / Tá Anh | Relevant parts of S1-01 | To be filled | Not started | Not created |
-+| S1-03 | User/profile/session/measurement ERD and migration | Tuấn Anh / Đạt | D-03, profile design | To be filled | In review | [PR #7](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/7) |
-| S1-04 | Registration/login/logout/current-user/profile contracts and backend | Tuấn Anh / Đạt | D-03, S1-03; D-02 for profile fields | To be filled | Not started | Not created |
+| S1-03 | User/profile/session/measurement ERD and migration | Tuấn Anh / Đạt | D-03, profile design | To be filled | In review | [PR #7](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/7) |
+| S1-04 | Registration/login/logout/current-user/profile contracts and backend | Tuấn Anh / Đạt | D-03, S1-03; D-02 for profile fields | To be filled | In review | [PR #10](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/10) |
 | S1-05 | Authentication and profile interface | Bảo + Tá Anh / Thắng | S1-04 contract, S1-02 | To be filled | Not started | Not created |
 | S1-06 | Ownership filtering for measurements and cross-account tests | Tuấn Anh + Đạt / Tá Anh | S1-03, S1-04 | To be filled | Not started | Not created |
 | S1-07 | Sourced TDEE equation, independent examples, and unit tests | Tá Anh / Thắng | D-02 | To be filled | In review; D-02 and human verification pending | [Issue #1](https://github.com/DozenBro/group13-smart-nutrition-fitness/issues/1), [PR #2](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/2) |
@@ -374,9 +374,10 @@ Apply the [shared Definition of Done](../PROJECT_SPEC.md#definition-of-done). St
 | --- | --- | --- | --- | --- |
 | EV-01 | 19 November 2026 | Build and test completed successfully at commit `a2e3eea` | [GitHub Actions run 44459130985](https://github.com/DozenBro/group13-smart-nutrition-fitness/actions/runs/44459130985) | Confirms frontend build, migration, and backend tests. Story review and acceptance require separate evidence |
 | EV-02 | 19 November 2026 | Initial measurement/BMI code created with AI assistance at the user's request | Commit `cb29921`, backend/frontend/test/migration files in the repository | Team attribution to A–F is pending |
+| EV-03 | 21 November 2026 | Auth migration applied cleanly and full suite passed on `S1-03-accounts-migration` | Local: `manage.py test` → 64 passed; `alembic heads` → one head. PR: [PR #7](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/7) | Local run only; CI evidence pending until PR merges. Đạt's S1-03 review pending |
 
 Earlier verification recorded 12 passing PostgreSQL tests and browser checks for saving, refresh, invalid input, and a narrow screen. Members should rerun the checks on their machines and record their names and results when accepting the handover.
-| EV-03 | 21 November 2026 | Auth migration applied cleanly and full suite passed on `S1-03-accounts-migration` | Local: `manage.py test` → 64 passed; `alembic heads` → one head. PR: [PR #N](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/7) | Local run only; CI evidence pending until PR merges. Đạt's S1-03 review pending |
+
 ### Member and AI Activity Log
 
 Add an entry for each session producing a handover result, such as a rule decision, code change, test run, or review. Link longer records in issues/PRs. No session has yet been confirmed under the name of a member A–F.
@@ -446,6 +447,15 @@ Blockers and next steps: [if any]
 - Verification:  `manage.py migrate` → clean on fresh databases; `manage.py create-admin` → works and is idempotent; `manage.py test` → 64 passed. SQLAlchemy reflection on `fitness_demo` and `fitness_test` confirms the schema matches `backend/models.py`. Downgrade round-trip not executed; the `downgrade()` body was reviewed but not run.
 - Handover: [PR #7](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/7). Đạt reviews; D-03 remains partially open for email normalization, session lifetime, CSRF, and admin provisioning. No human approval has been recorded or inferred.
 
+### S1-LOG-005: Auth and Profile API Implementation
+
+- Date: 21 November 2026, Asia/Ho_Chi_Minh..
+- AI assistance: drafted the API contract for Bảo's review; helped implementing `backend/dependencies.py`, `backend/auth.py`, `backend/profiles.py`, `backend/schemas.py`; added `tests/conftest.py`, `tests/test_auth.py`, `tests/test_profiles.py`.
+- Changed files: `backend/dependencies.py`, `backend/auth.py`, `backend/profiles.py`, `backend/schemas.py`, `backend/main.py` (two `include_router` lines), `tests/conftest.py`, `tests/test_auth.py`, `tests/test_profiles.py`, `docs/design/SPRINT_1_API.md`.
+- Repository baseline: `a5de397`; branch `feature/S1-04-auth-api`. This PR supplies the account and profile API layer but does not implement ownership filtering (S1-06), admin lock (S1-09), or frontend integration (S1-05).
+- Verification: `.venv/bin/python manage.py test` → 82 passed (18 new, 64 existing), 1 pre-existing warning. Auth tests cover registration, duplicate/case-variant email, role-escalation attempt, short password, login success/failure/consistency, `/me` with valid/no/revoked token, logout isolating current session. Profile tests cover null-when-empty GET, PUT upsert, invalid input rejection, existing-data preservation on 422, and per-user isolation. Swagger walk-through with Bảo pending at time of writing.
+- Handover: [PR #10](https://github.com/DozenBro/group13-smart-nutrition-fitness/pull/10). Đạt reviews; Bảo confirms endpoint shapes; Tá Anh confirms profile limits. D-03 remains open for CSRF and initial Admin provisioning.
+
 ## Revision History
 
 | Version | Date | Change | Confirmation |
@@ -457,3 +467,4 @@ Blockers and next steps: [if any]
 | 0.5 | 21 November 2026 | Add S1-07 formula proposal, handover, pure calculation evidence, and AI work log | Human review, D-02 approval, and integration pending |
 | 0.6 | 21 November 2026 | Add member starting actions, explicit database handoff, and implementation/verification checklists for all 11 tasks; record PR #2 merge | Task acknowledgements and human decisions still require evidence |
 | 0.7 | 21 November 2026 | Record S1-03 auth migration implementation, fork fix, create-admin, and 64-test evidence; S1-03 status → In review | Tuấn Anh's session; Đạt review and D-03 outcomes pending |
+| 0.8 | 21 November 2026 | Record S1-04 auth/profile API implementation and API contract; S1-04 status → In review | Tuấn Anh's session; Đạt review pending |

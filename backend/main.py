@@ -15,10 +15,14 @@ from sqlalchemy.orm import Session
 from .database import get_session
 from .health import calculate_bmi
 from .models import Food, Measurement, User
+from .auth import router as auth_router
+from .profiles import router as profiles_router
 from .workout_api import router as workout_router
 
 
 app = FastAPI(title='Group 13 · Measurement demo', version='0.1.0')
+app.include_router(auth_router)
+app.include_router(profiles_router)
 SessionDependency = Annotated[Session, Depends(get_session)]
 app.include_router(workout_router)
 
