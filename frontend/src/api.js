@@ -96,3 +96,60 @@ export const adminApi = {
   lockUser: (userId) => request(`/api/admin/users/${userId}/lock`, { method: 'POST' }),
   unlockUser: (userId) => request(`/api/admin/users/${userId}/unlock`, { method: 'POST' }),
 };
+
+function workoutHeaders(user) {
+  if (!user) return {};
+  return {
+    'X-User-Id': String(user.id),
+    'X-User-Role': user.role,
+  };
+}
+
+export const workoutApi = {
+  getCurrentPlan: (user) =>
+    request('/api/workout-plans/current', { headers: workoutHeaders(user) }),
+  createPlan: (user, goal) =>
+    request('/api/workout-plans', {
+      method: 'POST',
+      headers: workoutHeaders(user),
+      body: JSON.stringify({ goal }),
+    }),
+  completeSession: (user, sessionId) =>
+    request(`/api/workout-sessions/${sessionId}/complete`, {
+      method: 'POST',
+      headers: workoutHeaders(user),
+    }),
+  getStreak: (user) =>
+    request('/api/streak', { headers: workoutHeaders(user) }),
+  listCategories: (user) =>
+    request('/api/exercise-categories', { headers: workoutHeaders(user) }),
+  listExercises: (user, params = {}) => {
+    const query = new URLSearchParams();
+    if (params.category) query.set('category', params.category);
+    if (params.goal) query.set('goal', params.goal);
+    const qs = query.toString();
+    return request(qs ? `/api/exercises?${qs}` : '/api/exercises', {
+      headers: workoutHeaders(user),
+    });
+  },
+};
+
+export const foodApi = {
+  list: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.meal_slot) query.set('meal_slot', params.meal_slot);
+    if (params.max_price_vnd !== '' && params.max_price_vnd != null) {
+      query.set('max_price_vnd', String(params.max_price_vnd));
+    }
+    if (params.tag) query.set('tag', params.tag);
+    const qs = query.toString();
+    return request(qs ? `/api/foods?${qs}` : '/api/foods');
+  },
+  create: (payload) =>
+    request('/api/foods', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  remove: (foodId) =>
+    request(`/api/foods/${foodId}`, { method: 'DELETE' }),
+};

@@ -4,6 +4,8 @@ import { authApi, clearToken, getToken } from './api';
 import AuthView from './components/AuthView';
 import ProfileView from './components/ProfileView';
 import MeasurementsView from './components/MeasurementsView';
+import WorkoutsView from './components/WorkoutsView';
+import FoodsView from './components/FoodsView';
 import AdminView from './components/AdminView';
 import './style.css';
 
@@ -90,6 +92,20 @@ function App() {
             >
               Health profile
             </button>
+            <button
+              type="button"
+              className={activeTab === 'workouts' ? 'tab active' : 'tab'}
+              onClick={() => setActiveTab('workouts')}
+            >
+              Workout planner
+            </button>
+            <button
+              type="button"
+              className={activeTab === 'foods' ? 'tab active' : 'tab'}
+              onClick={() => setActiveTab('foods')}
+            >
+              Foods
+            </button>
             {user.role === 'admin' && (
               <button
                 type="button"
@@ -109,6 +125,12 @@ function App() {
           )}
           {activeTab === 'profile' && (
             <ProfileView onSessionExpired={handleSessionExpired} />
+          )}
+          {activeTab === 'workouts' && (
+            <WorkoutsView user={user} />
+          )}
+          {activeTab === 'foods' && (
+            <FoodsView />
           )}
           {activeTab === 'admin' && user.role === 'admin' && (
             <AdminView currentUser={user} onSessionExpired={handleSessionExpired} />
